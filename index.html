@@ -1,0 +1,2414 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="author" content="ChenYuQi">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>作业清点台</title>
+<style>
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;padding:0}
+body{
+  color:#16233a;
+  font-family:-apple-system,"SF Pro SC","PingFang SC","Microsoft YaHei","Hiragino Sans GB",sans-serif;
+  font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;
+  background-color:#f4f7fc;
+  background-image:
+    radial-gradient(1200px 620px at 8% -10%,#dbe8ff 0%,rgba(219,232,255,0) 60%),
+    radial-gradient(1000px 560px at 96% 0%,#e9e4ff 0%,rgba(233,228,255,0) 58%),
+    radial-gradient(900px 520px at 50% 112%,#dcf1fb 0%,rgba(220,241,251,0) 62%);
+  background-repeat:no-repeat;background-attachment:fixed;
+}
+.wrap{max-width:1120px;margin:0 auto;padding:34px 20px 76px}
+/* 标题：赛博朋克霓虹风 */
+header{
+  position:relative;text-align:center;margin:4px 0 30px;padding:30px 20px 34px;
+  border-radius:20px;overflow:hidden;
+  background-image:
+    linear-gradient(#00eaff,#00eaff),linear-gradient(#00eaff,#00eaff),
+    linear-gradient(#ff2e88,#ff2e88),linear-gradient(#ff2e88,#ff2e88),
+    linear-gradient(#ff2e88,#ff2e88),linear-gradient(#ff2e88,#ff2e88),
+    linear-gradient(#00eaff,#00eaff),linear-gradient(#00eaff,#00eaff),
+    repeating-linear-gradient(0deg,rgba(0,234,255,.06) 0 1px,rgba(0,0,0,0) 1px 4px),
+    radial-gradient(120% 150% at 50% -30%,#12234a 0%,#0a1330 45%,#05070f 100%);
+  background-size:
+    26px 2px,2px 26px, 26px 2px,2px 26px, 26px 2px,2px 26px, 26px 2px,2px 26px,
+    auto,auto;
+  background-position:
+    left 12px top 12px,left 12px top 12px,
+    right 12px top 12px,right 12px top 12px,
+    left 12px bottom 12px,left 12px bottom 12px,
+    right 12px bottom 12px,right 12px bottom 12px,
+    0 0,0 0;
+  background-repeat:
+    no-repeat,no-repeat,no-repeat,no-repeat,no-repeat,no-repeat,no-repeat,no-repeat,
+    repeat,no-repeat;
+  border:1px solid rgba(0,234,255,.32);
+  box-shadow:0 0 28px rgba(0,190,255,.2),0 14px 40px rgba(4,10,26,.42),
+    inset 0 0 60px rgba(0,140,255,.1),inset 0 0 2px rgba(0,234,255,.6);
+}
+header::before{
+  content:'';position:absolute;left:-20%;right:-20%;top:-70%;height:60%;pointer-events:none;
+  background:linear-gradient(180deg,rgba(0,234,255,0),rgba(0,234,255,.16),rgba(0,234,255,0));
+  animation:qpScan 7s linear infinite;
+}
+header::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:
+    linear-gradient(90deg,rgba(255,46,136,.16),rgba(0,0,0,0) 18%,rgba(0,0,0,0) 82%,rgba(0,234,255,.16)),
+    linear-gradient(180deg,rgba(255,255,255,.06),rgba(0,0,0,0) 30%);
+}
+@keyframes qpScan{0%{transform:translateY(0)}100%{transform:translateY(340%)}}
+header h1{
+  position:relative;z-index:2;margin:0;line-height:1.25;white-space:nowrap;
+  font-size:clamp(28px,3.6vw,42px);font-weight:800;letter-spacing:.14em;
+  color:#f2fbff;font-family:"Impact","Arial Black","Microsoft YaHei",sans-serif;
+}
+header h1 .qp-brk{
+  display:inline-block;font-size:.92em;font-weight:900;letter-spacing:0;
+  color:#00eaff;transform:skewX(-9deg);margin:0 .1em;
+  text-shadow:0 0 8px rgba(0,234,255,.95),0 0 22px rgba(0,140,255,.6);
+  animation:qpBrk 2.6s ease-in-out infinite;
+}
+header h1 .qp-brk.r{color:#ff2e88;text-shadow:0 0 8px rgba(255,46,136,.9),0 0 22px rgba(255,46,136,.5)}
+@keyframes qpBrk{0%,100%{opacity:1}50%{opacity:.55}}
+header h1 .qp-txt{
+  position:relative;display:inline-block;z-index:1;
+  transform:skewX(-9deg);
+  -webkit-text-stroke:1px rgba(0,234,255,.4);
+  text-shadow:
+    0 0 4px rgba(255,255,255,.95),
+    0 0 10px rgba(0,234,255,.95),
+    0 0 26px rgba(0,170,255,.75),
+    0 0 54px rgba(0,110,255,.5);
+  animation:qpGlow 3.6s ease-in-out infinite;
+}
+@keyframes qpGlow{
+  0%,100%{text-shadow:0 0 4px rgba(255,255,255,.9),0 0 10px rgba(0,234,255,.95),0 0 24px rgba(0,170,255,.7),0 0 48px rgba(0,110,255,.45)}
+  50%{text-shadow:0 0 3px rgba(255,255,255,.8),0 0 8px rgba(0,234,255,.7),0 0 18px rgba(0,170,255,.5),0 0 36px rgba(0,110,255,.32)}
+}
+header h1 .qp-txt::before,
+header h1 .qp-txt::after{
+  content:attr(data-text);position:absolute;left:0;right:0;top:0;z-index:-1;
+  font:inherit;letter-spacing:inherit;pointer-events:none;-webkit-text-stroke:0;
+}
+header h1 .qp-txt::before{color:#ff2e88;text-shadow:0 0 12px rgba(255,46,136,.9);opacity:.6;animation:qpGlitchA 4.6s steps(1) infinite}
+header h1 .qp-txt::after{color:#00eaff;text-shadow:0 0 12px rgba(0,234,255,.9);opacity:.5;animation:qpGlitchB 5.8s steps(1) infinite}
+@keyframes qpGlitchA{
+  0%,92%,100%{transform:translate(0,0);clip-path:inset(0 0 100% 0)}
+  93%{transform:translate(-4px,1px);clip-path:inset(0 0 55% 0)}
+  95%{transform:translate(3px,-1px);clip-path:inset(45% 0 20% 0)}
+  97%{transform:translate(-2px,0);clip-path:inset(70% 0 5% 0)}
+}
+@keyframes qpGlitchB{
+  0%,88%,100%{transform:translate(0,0);clip-path:inset(0 0 100% 0)}
+  89%{transform:translate(4px,-1px);clip-path:inset(20% 0 45% 0)}
+  91%{transform:translate(-3px,1px);clip-path:inset(60% 0 10% 0)}
+  93%{transform:translate(2px,0);clip-path:inset(35% 0 35% 0)}
+}
+header .rule{
+  position:relative;z-index:2;width:280px;height:3px;border-radius:3px;margin:18px auto 0;
+  background:linear-gradient(90deg,rgba(0,234,255,0),#00eaff 20%,#ffffff 50%,#ff2e88 80%,rgba(255,46,136,0));
+  box-shadow:0 0 12px rgba(0,234,255,.9),0 0 26px rgba(255,46,136,.5);
+  transform:skewX(-9deg);
+}
+header .rule::before,header .rule::after{
+  content:'';position:absolute;top:50%;width:7px;height:7px;margin-top:-3.5px;
+  background:#00eaff;box-shadow:0 0 10px #00eaff;transform:rotate(45deg);
+}
+header .rule::before{left:-14px}
+header .rule::after{right:-14px;background:#ff2e88;box-shadow:0 0 10px #ff2e88}
+@media (prefers-reduced-motion:reduce){
+  header::before,header h1 .qp-txt,header h1 .qp-brk,
+  header h1 .qp-txt::before,header h1 .qp-txt::after{animation:none}
+  header h1 .qp-txt::before,header h1 .qp-txt::after{opacity:0}
+}
+.card{
+  background:rgba(255,255,255,.78);
+  -webkit-backdrop-filter:blur(18px) saturate(180%);
+  backdrop-filter:blur(18px) saturate(180%);
+  border:1px solid rgba(255,255,255,.72);
+  border-radius:22px;padding:22px 24px;margin-bottom:18px;
+  box-shadow:0 2px 6px rgba(31,56,88,.05),0 16px 40px rgba(31,56,88,.08);
+}
+.card h2{font-size:18px;margin:0 0 12px;color:#132741;display:flex;align-items:center;gap:10px;font-weight:700}
+.step{display:inline-flex;width:26px;height:26px;border-radius:9px;background:linear-gradient(160deg,#5b9bf8,#2f6ee8);color:#fff;font-size:14px;font-weight:700;align-items:center;justify-content:center;flex:none;box-shadow:0 3px 8px rgba(47,110,232,.28)}
+.hint{font-size:14px;color:#5d6b7e;margin:0 0 12px;line-height:1.75}
+.row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:10px 0}
+.btn{
+  border:1px solid rgba(31,56,88,.13);background:linear-gradient(180deg,#fff,#f4f8fd);color:#22364d;
+  border-radius:14px;padding:10px 20px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;
+  box-shadow:0 2px 5px rgba(31,56,88,.10),0 8px 18px rgba(31,56,88,.10);
+  transition:transform .15s cubic-bezier(.2,.8,.2,1),background .15s,box-shadow .15s,border-color .15s;
+}
+.btn:hover{background:linear-gradient(180deg,#fff,#eef5ff);border-color:rgba(31,56,88,.2);box-shadow:0 4px 10px rgba(31,56,88,.14),0 12px 26px rgba(31,56,88,.14);transform:translateY(-1px)}
+.btn:active{transform:scale(.97);box-shadow:0 1px 3px rgba(31,56,88,.16)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:0 2px 5px rgba(31,56,88,.07)}
+.btn.primary{background:linear-gradient(180deg,#3b82f6,#2563eb);border-color:rgba(37,99,235,.85);color:#fff;box-shadow:0 3px 8px rgba(37,99,235,.32),0 8px 20px rgba(37,99,235,.24)}
+.btn.primary:hover{background:linear-gradient(180deg,#4a8bf8,#2f6ee8);box-shadow:0 5px 12px rgba(37,99,235,.38),0 12px 26px rgba(37,99,235,.3)}
+.btn.sm{padding:4px 10px;font-size:13px;border-radius:10px;font-weight:600;background:linear-gradient(180deg,#fff,#eff4fa);border-color:rgba(19,39,65,.17);box-shadow:0 1px 3px rgba(31,56,88,.12),0 4px 10px rgba(31,56,88,.09);color:#243a52}
+.btn.sm:hover{background:#fff;border-color:rgba(19,39,65,.26);box-shadow:0 3px 8px rgba(31,56,88,.16),0 8px 18px rgba(31,56,88,.12);transform:translateY(-1px)}
+.btn.primary.sm{background:linear-gradient(180deg,#3b82f6,#2563eb);border-color:transparent;color:#fff;box-shadow:0 2px 6px rgba(37,99,235,.34),0 6px 14px rgba(37,99,235,.22)}
+.btn.danger{background:linear-gradient(180deg,#fff,#fff6f6);border-color:rgba(229,72,77,.42);color:#d93b40;box-shadow:0 2px 5px rgba(229,72,77,.16),0 8px 18px rgba(229,72,77,.12)}
+.btn.danger:hover{background:#fff5f5;border-color:#e5484d;box-shadow:0 4px 10px rgba(229,72,77,.24),0 12px 24px rgba(229,72,77,.16)}
+.status{font-size:14px;color:#5d6b7e}
+.status.ok{color:#1c9b56;font-weight:700}
+.status.bad{color:#d93b40;font-weight:700}
+.tabs{display:flex;gap:8px;margin:2px 0 16px;flex-wrap:wrap;padding-bottom:14px;border-bottom:1px solid rgba(19,39,65,.08)}
+.tab{border:1px solid rgba(31,56,88,.13);background:linear-gradient(180deg,#fff,#f4f8fd);border-radius:14px;padding:10px 20px;font-size:15px;font-weight:600;color:#41546b;cursor:pointer;font-family:inherit;box-shadow:0 2px 5px rgba(31,56,88,.10),0 8px 18px rgba(31,56,88,.09);transition:transform .15s cubic-bezier(.2,.8,.2,1),background .15s,box-shadow .15s}
+.tab:hover{background:linear-gradient(180deg,#fff,#eef5ff);border-color:rgba(31,56,88,.2);box-shadow:0 4px 10px rgba(31,56,88,.14),0 12px 26px rgba(31,56,88,.13);transform:translateY(-1px)}
+.tab.on{background:linear-gradient(180deg,#3b82f6,#2563eb);border-color:rgba(37,99,235,.85);color:#fff;box-shadow:0 3px 8px rgba(37,99,235,.32),0 8px 20px rgba(37,99,235,.24)}
+.pane[hidden]{display:none}
+.book{border:1px solid rgba(19,39,65,.07);border-radius:16px;padding:13px 15px;margin-bottom:10px;background:rgba(255,255,255,.6)}
+.book.skip{background:rgba(247,249,252,.7);border-style:dashed}
+.book .bhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.book .bname{font-weight:700;font-size:15px;color:#132741;word-break:break-all}
+.badge{display:inline-block;background:rgba(232,241,255,.9);color:#2563eb;border-radius:999px;padding:2px 10px;font-size:13px;font-weight:700}
+.badge.gray{background:rgba(238,241,246,.9);color:#61707f}
+.badge.warn{background:rgba(255,244,229,.95);color:#c25e00}
+.clsInput{border:1px solid rgba(19,39,65,.16);border-radius:12px;padding:6px 10px;font-size:14px;font-family:inherit;color:#16233a;width:200px;max-width:100%;background:#fff;box-shadow:0 1px 3px rgba(31,56,88,.12),inset 0 1px 0 #fff}
+.namegrid{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.namegrid span{background:rgba(255,255,255,.86);border:1px solid rgba(19,39,65,.08);border-radius:10px;padding:3px 10px;font-size:14px}
+.namegrid span i{font-style:normal;color:#93a2b3;font-size:12px;margin-right:4px}
+details summary{cursor:pointer;font-size:14px;color:#2563eb;font-weight:700;margin-top:10px;outline:none}
+.stats{display:flex;gap:12px;flex-wrap:wrap;margin:16px 0}
+.stat{background:rgba(255,255,255,.66);border:1px solid rgba(255,255,255,.85);border-radius:18px;padding:12px 20px;min-width:116px;text-align:center;box-shadow:0 1px 3px rgba(31,56,88,.05)}
+.stat b{display:block;font-size:30px;line-height:1.1;color:#132741;font-weight:700;margin-bottom:4px;letter-spacing:-.5px}
+.stat span{display:block;font-size:13px;color:#5d6b7e;line-height:1.3}
+.stat.red{background:rgba(255,238,239,.78)}
+.stat.green{background:rgba(235,249,241,.78)}
+.stat.orange{background:rgba(255,247,235,.78)}
+.stat.red b{color:#e5484d}
+.stat.green b{color:#1c9b56}
+.stat.orange b{color:#e0810a}
+.sec-title{font-size:16px;font-weight:700;color:#132741;margin:20px 0 10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sec-title.big{font-size:20px;gap:10px}
+.sec-title .hi{color:#d93b40}
+.miss{display:grid;grid-template-columns:repeat(auto-fill,minmax(186px,1fr));gap:10px}
+.stu{background:rgba(255,255,255,.88);border:1px solid rgba(229,72,77,.26);border-radius:16px;padding:10px 12px;box-shadow:0 1px 3px rgba(229,72,77,.07)}
+.stu b{display:block;font-size:20px;color:#d93b40;font-weight:700;letter-spacing:1px}
+.stu .ops{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap}
+.stu.gone{display:none}
+.empty{background:rgba(235,249,241,.85);border:1px solid rgba(28,155,86,.22);color:#14663a;border-radius:16px;padding:13px 16px;font-size:15px;font-weight:700}
+.tag{display:inline-block;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:700;margin-left:6px}
+.tag.leave{background:rgba(255,244,229,.95);color:#c25e00}
+.tag.exempt{background:rgba(240,235,250,.95);color:#4a3ba8}
+.tag.makeup{background:rgba(235,249,241,.95);color:#1c9b56}
+table.tb{width:100%;border-collapse:collapse;font-size:15px;margin-top:6px}
+table.tb th,table.tb td{border:1px solid rgba(19,39,65,.09);padding:9px 11px;text-align:left;vertical-align:top}
+table.tb th{background:rgba(238,244,253,.9);color:#1b3a63;font-weight:700;white-space:nowrap}
+table.tb tbody tr:nth-child(even){background:rgba(250,252,255,.7)}
+table.tb td.num{text-align:center;font-weight:700;color:#e5484d;font-size:17px}
+table.tb tbody tr.off{background:rgba(245,247,250,.85);color:#93a2b3}
+.sw{display:inline-flex;align-items:center;gap:6px;font-size:14px;cursor:pointer;user-select:none}
+.sw input{width:18px;height:18px;cursor:pointer;margin:0;accent-color:#2563eb}
+table.tb tbody tr.off td.num{color:#93a2b3}
+.bname-cell{font-weight:700}
+.mini{font-size:13px;color:#8b98a8}
+.tip{border-radius:14px;padding:12px 15px;font-size:14px;margin:12px 0;line-height:1.7;background:rgba(232,241,255,.85);color:#1b4a86;box-shadow:inset 3px 0 0 #3b82f6}
+.tip.warn{background:rgba(255,248,238,.92);color:#7a4a12;box-shadow:inset 3px 0 0 #e0a020}
+.tip.err{background:rgba(253,236,236,.92);color:#9b1c1c;box-shadow:inset 3px 0 0 #e5484d}
+.tip.ok{background:rgba(235,249,241,.92);color:#14663a;box-shadow:inset 3px 0 0 #1c9b56}
+.tip.info{background:rgba(232,241,255,.85);color:#1b4a86;box-shadow:inset 3px 0 0 #3b82f6}
+.tip .btn{vertical-align:middle}
+.tip .hi{color:#d93b40}
+.tip .diag{margin:8px 0 0;padding-left:22px}
+.tip .diag li{margin:6px 0;line-height:1.72}
+.tip .diag li b{font-weight:700}
+.tip .diag code{background:rgba(255,255,255,.85)}
+code{background:rgba(232,238,247,.95);border-radius:7px;padding:1px 7px;font-size:13px;font-family:Consolas,Monaco,monospace;color:#2a4a68}
+.batchline{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.scrollbox{max-height:440px;overflow:auto;border-radius:12px}
+.scrollbox table.tb{margin-top:0}
+.scrollbox thead th{position:sticky;top:0;z-index:1}
+.scoreline b{font-size:15px}
+.printbar{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;margin:22px 0 4px}
+/* 打印入口做成纯文字链接：透明底、无边框无阴影，只有悬停时才有一点动静 */
+.btnlink{
+  border:0;background:transparent;box-shadow:none;padding:2px 4px;margin:0;
+  font-family:inherit;font-size:15px;font-weight:600;line-height:1.5;
+  color:#8b98a8;cursor:pointer;border-radius:8px;
+  transition:color .18s ease,transform .18s cubic-bezier(.2,.8,.2,1);
+}
+.btnlink:hover{color:#3d4b5e;transform:translateY(-1px)}
+.btnlink:active{transform:scale(.97)}
+.btnlink:focus-visible{outline:2px solid #a8c4ea;outline-offset:2px}
+footer{text-align:center;font-size:13px;color:#93a2b3;padding:16px 0 0}
+@media print{
+  body{background:#fff!important;background-image:none!important}
+  .wrap{max-width:none;padding:0}
+  .card{background:#fff!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-shadow:none!important;border:1px solid #ccc!important;border-radius:10px!important;page-break-inside:avoid}
+  .stat,.stu,.empty,.namegrid span,.tab,.book{background:#fff!important;box-shadow:none!important}
+  .tip{background:#fff!important;box-shadow:none!important;border:1px solid #ddd!important}
+  header{background:#fff!important;border:1px solid #333!important;box-shadow:none!important;border-radius:8px!important;padding:10px!important}
+  header::before,header::after{display:none!important}
+  header h1{color:#000!important;letter-spacing:2px!important}
+  header h1 .qp-txt{color:#000!important;text-shadow:none!important;animation:none!important;-webkit-text-stroke:0!important;transform:none!important}
+  header h1 .qp-txt::before,header h1 .qp-txt::after{display:none!important}
+  header h1 .qp-brk{color:#000!important;text-shadow:none!important;animation:none!important;transform:none!important}
+  header .rule{background:#333!important;box-shadow:none!important}
+  header .rule::before,header .rule::after{display:none!important}
+  .btn,input,select,details summary,#secMarks,.tabs,#browserTip{display:none!important}
+  .card h2 .step{background:#000!important;box-shadow:none!important}
+  .scrollbox{max-height:none;overflow:visible}
+  .scrollbox thead th{position:static}
+  details{display:block}
+  details>*{display:block!important}
+
+  /* 打印全页时，屏幕专用的操作提示不出现在纸上 */
+  .tip.info,.diagtips,.clshint,.sw,.printbar,.hint{display:none!important}
+  #tbFolders th:nth-child(5),#tbFolders td:nth-child(5){display:none!important}
+  .pane .row,
+  #classPickRow,
+  .scorecfg{display:none!important}
+  .scoreline > label,
+  .scoreline > input,
+  .scoreline > .mini{display:none!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1><span class="qp-brk">[</span><span class="qp-txt" data-text="作业清点台">作业清点台</span><span class="qp-brk r">]</span></h1>
+  <div class="rule"></div>
+</header>
+
+<div id="browserTip" class="tip err" hidden></div>
+
+<section class="card" id="secRoster">
+  <h2><span class="step">1</span>导入班级花名册</h2>
+  <p class="hint">选择 U盘 上的花名册文件夹（里面放 .xlsx 即可，其他文件会自动忽略）。<b>班级名直接取花名册文件名</b>（去掉「花名册/名册/班/表」等字样），不做任何简称，比如文件名 <code>xx数控高考花名册.xlsx</code> 的班名就是「xx数控高考」。识别不对的可以手改，手改后选文件夹时会以文件夹名为准。</p>
+  <div class="row">
+    <button class="btn primary" id="btnRoster">选择花名册文件夹</button>
+    <input type="file" id="fileRoster" webkitdirectory directory multiple hidden>
+    <span class="status" id="rosterStatus">尚未导入</span>
+  </div>
+  <div id="rosterList"></div>
+  <div class="row" id="classPickRow" hidden>
+    <label for="classPick"><b>当前比对班级：</b></label>
+    <select id="classPick" class="clsInput" style="width:auto;min-width:180px;max-width:100%"></select>
+    <span class="hint" id="classPickHint" style="margin:0"></span>
+  </div>
+</section>
+
+<section class="card" id="secMode">
+  <h2><span class="step">2</span>选择检查方式</h2>
+  <div class="tabs">
+    <button class="tab on" data-mode="single">单次作业检查</button>
+    <button class="tab" data-mode="batch">批量检查（人次数）</button>
+  </div>
+
+  <div id="paneSingle" class="pane">
+    <p class="hint">选<b>班级文件夹</b>（如 <code>xx数控高考</code>）。选好之后页面会<b>一直盯着这个文件夹</b>：学生中途把作业交进来，几秒内自动归到已交，不用重新选。同时会自动读取同目录的 <code>班级名作业标记.json</code>，并默认打开<b>最近一次</b>；顶部下拉可切换看哪一次。<b>班级名以文件夹名为准。</b></p>
+    <div class="row">
+      <button class="btn primary" id="btnSingle" disabled>选择班级文件夹</button>
+      <input type="file" id="fileSingle" webkitdirectory directory multiple hidden>
+      <span class="status" id="singleStatus">请先导入花名册</span>
+    </div>
+    <div id="singleOut"></div>
+  </div>
+
+  <div id="paneBatch" class="pane" hidden>
+    <p class="hint">选班级文件夹（如 <code>xx数控技能</code>、<code>xx数控高考</code>）。它下面<b>每一个第一级子文件夹</b>都当成一次作业，再里面的文件夹不单独算。哪一次不想计入，在下面把「计入」勾掉即可。<b>选好之后会一直盯着，学生交了自动刷新。</b>班级名以文件夹名为准。</p>
+    <div class="row">
+      <button class="btn primary" id="btnBatch" disabled>选择班级文件夹</button>
+      <input type="file" id="fileBatch" webkitdirectory directory multiple hidden>
+      <span class="status" id="batchStatus">请先导入花名册</span>
+    </div>
+    <div id="batchOut"></div>
+  </div>
+</section>
+
+<section class="card" id="secScore" hidden>
+  <h2><span class="step">3</span>平时分计分</h2>
+  <p class="hint">只在<b>批量检查</b>出结果后出现。平时分满分 100，<b>应交 = 计入的作业次数 − 请假/免交次数</b>，补交算已交，请假/免交那几次不扣分。最后一列是<b>期末要考多少分才及格（总评 60）</b>。</p>
+  <div class="row scoreline">
+    <label for="scoreWeight" style="font-weight:600">平时分占总分</label>
+    <input id="scoreWeight" class="clsInput" type="number" min="30" max="70" step="5" value="50" style="width:92px">
+    <span class="mini">%（30–70）</span>
+    <span class="status" id="scoreStatus"></span>
+  </div>
+  <div class="row scorecfg" style="margin-top:2px">
+    <label for="scoreMode" style="font-weight:600">扣分规则</label>
+    <select id="scoreMode" class="clsInput" style="width:auto;min-width:180px">
+      <option value="prop">按比例扣（100 × 已交 ÷ 应交）</option>
+      <option value="fixed">每次缺交固定扣分</option>
+    </select>
+    <span id="scoreFixBox" hidden>
+      <label for="scoreStep" class="mini" style="font-weight:600">每次扣</label>
+      <input id="scoreStep" class="clsInput" type="number" min="0" max="100" step="1" value="10" style="width:78px">
+      <span class="mini">分，</span>
+      <label for="scoreGrace" class="mini" style="font-weight:600">缺交</label>
+      <input id="scoreGrace" class="clsInput" type="number" min="0" max="99" step="1" value="0" style="width:70px">
+      <span class="mini">次以内不扣</span>
+    </span>
+  </div>
+  <div id="scoreOut"></div>
+  <div class="mini" id="scoreFormula" style="margin-top:8px"></div>
+</section>
+
+<section class="card" id="secMarks">
+  <h2><span class="step">4</span>标记与剔除</h2>
+  <p class="hint">标记<b>按班级分文件</b>。当前班级「<b id="markClsName" style="color:#c62828">未确定</b>」，导出得到 <code>班级名作业标记.json</code>，<b>放进对应的班级文件夹</b> <code>CADwork\班级名\</code>。下次上课：<b>导入名单 → 选文件夹（会自动读这份 json）→ 比对</b>。同一个班反复导出会<b>叠加</b>，覆盖旧文件即可；放根目录的备份需手动点「读取标记文件」。</p>
+  <div class="row">
+    <button class="btn" id="btnExportMarks">导出本班标记</button>
+    <button class="btn" id="btnImportMarks">读取标记文件（可多选）</button>
+    <input type="file" id="fileMarks" accept=".json,application/json" multiple hidden>
+    <button class="btn danger" id="btnClearMarks">清除本班标记</button>
+    <span class="status" id="markStatus"></span>
+  </div>
+</section>
+
+<div class="printbar">
+  <button class="btnlink" id="btnPrintAll">打印全页</button>
+  <span class="mini">打印时会自动去掉按钮、下拉框和屏幕提示</span>
+</div>
+
+<footer>名单与作业文件都只在本机读取，不上传、不联网。</footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var EXT_RE = /\.(dwg|jpg|jpeg)$/i;
+  var DATE_RE = /^\d{8}$/;
+  var MARK_SUFFIX = '作业标记.json';
+  var MARK_EXT_RE = /作业标记\.json$/i;
+
+  function markFileOf(cls) { return (cls || '未定班级') + MARK_SUFFIX; }
+
+  /* 班级名只有一个来源：花名册文件名（cleanClass 后原样使用），不再做任何别名简写 */
+  var state = {
+    books: [],
+    classPick: '',
+    single: null,
+    batch: null,
+    singleSrc: null,
+    batchSrc: null,
+    singleBatch: '',
+    marks: [],
+    excluded: [],
+    dirty: false,
+    mode: 'single',
+    marksLoadedFrom: ''
+  };
+
+  /* ============ 通用工具 ============ */
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function norm(s) {
+    if (!s) return '';
+    var t = String(s).replace(/[\uFF01-\uFF5E]/g, function (ch) {
+      return String.fromCharCode(ch.charCodeAt(0) - 0xFEE0);
+    });
+    t = t.replace(/\u3000/g, ' ');
+    return t.replace(/\s+/g, '').toLowerCase();
+  }
+
+  /* 按内容实测宽度自适应输入框，避免班级名（如「26应急数控技能（数控）」）被截断 */
+  var _fitCv = null;
+  function fitInputWidth(el, min) {
+    if (!el) return;
+    min = min || 150;
+    try {
+      if (!_fitCv) _fitCv = document.createElement('canvas');
+      var ctx = _fitCv.getContext('2d');
+      var cs = window.getComputedStyle(el);
+      ctx.font = (cs.fontStyle || 'normal') + ' ' + (cs.fontWeight || '400') + ' ' +
+        (cs.fontSize || '14px') + ' ' + (cs.fontFamily || 'sans-serif');
+      var w = ctx.measureText(String(el.value || '')).width;
+      el.style.width = Math.min(520, Math.max(min, Math.ceil(w) + 26)) + 'px';
+    } catch (e) { el.style.width = min + 'px'; }
+  }
+
+  function cleanClass(s) {
+    if (!s) return '';
+    var t = norm(s);
+    t = t.replace(/\.[a-z0-9]+$/i, '');
+    t = t.replace(/花名册|名册|学生名单|名单|考勤表|签到表|表格|班|表/g, '');
+    /* 中文班级名里的括号恢复成全角，避免显示成「26应急数控技能(数控)」这种半角括号 */
+    t = t.replace(/\(/g, '（').replace(/\)/g, '）');
+    return t;
+  }
+
+  function guessClass(fileName, title) {
+    var cands = [];
+    var a = cleanClass(fileName);
+    if (a) cands.push(a);
+    var b = cleanClass(title);
+    if (b && cands.indexOf(b) === -1) cands.push(b);
+    if (cands.length) return cands[0];
+    return String(fileName || '').replace(/\.[^.]+$/, '');
+  }
+
+  function unescapeXml(s) {
+    return String(s)
+      .replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"').replace(/&apos;/g, "'")
+      .replace(/&#x([0-9a-fA-F]+);/g, function (_, h) { return String.fromCharCode(parseInt(h, 16)); })
+      .replace(/&#(\d+);/g, function (_, d) { return String.fromCharCode(parseInt(d, 10)); })
+      .replace(/&amp;/g, '&');
+  }
+
+  function textOf(bytes) {
+    return new TextDecoder('utf-8').decode(bytes);
+  }
+
+  /* ============ DEFLATE 解压 ============ */
+
+  var LBASE = [3,4,5,6,7,8,9,10,11,13,15,17,19,23,27,31,35,43,51,59,67,83,99,115,131,163,195,227,258];
+  var LEXT  = [0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,0];
+  var DBASE = [1,2,3,4,5,7,9,13,17,25,33,49,65,97,129,193,257,385,513,769,1025,1537,2049,3073,4097,6145,8193,12289,16385,24577];
+  var DEXT  = [0,0,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13];
+  var CLORDER = [16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15];
+
+  var FIXED_LIT = null;
+  var FIXED_DIST = null;
+
+  function ensureFixed() {
+    if (FIXED_LIT) return;
+    FIXED_LIT = new Array(288);
+    var i;
+    for (i = 0; i < 144; i++) FIXED_LIT[i] = 8;
+    for (i = 144; i < 256; i++) FIXED_LIT[i] = 9;
+    for (i = 256; i < 280; i++) FIXED_LIT[i] = 7;
+    for (i = 280; i < 288; i++) FIXED_LIT[i] = 8;
+    FIXED_DIST = new Array(30);
+    for (i = 0; i < 30; i++) FIXED_DIST[i] = 5;
+  }
+
+  function buildTree(lens) {
+    var maxLen = 15, blCount = new Array(maxLen + 1), nextCode = new Array(maxLen + 1);
+    var i;
+    for (i = 0; i <= maxLen; i++) { blCount[i] = 0; nextCode[i] = 0; }
+    for (i = 0; i < lens.length; i++) { var L = lens[i]; if (L > 0) blCount[L]++; }
+    var code = 0;
+    for (var b = 1; b <= maxLen; b++) {
+      code = (code + blCount[b - 1]) << 1;
+      nextCode[b] = code;
+    }
+    var table = [];
+    for (i = 0; i <= maxLen; i++) table[i] = new Map();
+    for (i = 0; i < lens.length; i++) {
+      var len = lens[i];
+      if (!len) continue;
+      table[len].set(nextCode[len]++, i);
+    }
+    return { maxLen: maxLen, table: table };
+  }
+
+  function inflateRaw(data) {
+    var pos = 0, bitBuf = 0, bitCnt = 0;
+
+    function bits(n) {
+      while (bitCnt < n) {
+        if (pos >= data.length) throw new Error('压缩数据不完整');
+        bitBuf |= data[pos++] << bitCnt;
+        bitCnt += 8;
+      }
+      var v = bitBuf & ((1 << n) - 1);
+      bitBuf >>>= n;
+      bitCnt -= n;
+      return v;
+    }
+
+    function alignByte() {
+      var rem = bitCnt % 8;
+      if (rem) { bitBuf >>>= rem; bitCnt -= rem; }
+    }
+
+    function decode(tree) {
+      var code = 0;
+      for (var len = 1; len <= tree.maxLen; len++) {
+        code = (code << 1) | bits(1);
+        var m = tree.table[len];
+        if (m && m.has(code)) return m.get(code);
+      }
+      throw new Error('Huffman 解码失败');
+    }
+
+    ensureFixed();
+
+    var out = [];
+    var last = 0;
+
+    while (!last) {
+      last = bits(1);
+      var type = bits(2);
+
+      if (type === 0) {
+        alignByte();
+        var blen = bits(8) | (bits(8) << 8);
+        bits(8); bits(8);
+        for (var s = 0; s < blen; s++) out.push(bits(8));
+      } else if (type === 1) {
+        var ft = buildTree(FIXED_LIT), fd = buildTree(FIXED_DIST);
+        inflateBlock(ft, fd);
+      } else if (type === 2) {
+        var hlit = bits(5) + 257;
+        var hdist = bits(5) + 1;
+        var hclen = bits(4) + 4;
+        var clens = new Array(19);
+        var q;
+        for (q = 0; q < 19; q++) clens[q] = 0;
+        for (q = 0; q < hclen; q++) clens[CLORDER[q]] = bits(3);
+        var clTree = buildTree(clens);
+        var lens = [];
+        var total = hlit + hdist;
+        while (lens.length < total) {
+          var sym = decode(clTree);
+          if (sym < 16) {
+            lens.push(sym);
+          } else if (sym === 16) {
+            var prev = lens.length ? lens[lens.length - 1] : 0;
+            var r16 = 3 + bits(2);
+            for (q = 0; q < r16; q++) lens.push(prev);
+          } else if (sym === 17) {
+            var r17 = 3 + bits(3);
+            for (q = 0; q < r17; q++) lens.push(0);
+          } else {
+            var r18 = 11 + bits(7);
+            for (q = 0; q < r18; q++) lens.push(0);
+          }
+        }
+        lens.length = total;
+        var litTree = buildTree(lens.slice(0, hlit));
+        var distTree = buildTree(lens.slice(hlit));
+        inflateBlock(litTree, distTree);
+      } else {
+        throw new Error('压缩块类型异常');
+      }
+    }
+
+    function inflateBlock(litTree, distTree) {
+      while (true) {
+        var sym = decode(litTree);
+        if (sym < 256) {
+          out.push(sym);
+        } else if (sym === 256) {
+          return;
+        } else {
+          var idx = sym - 257;
+          if (idx < 0 || idx >= LBASE.length) throw new Error('长度码异常');
+          var length = LBASE[idx] + bits(LEXT[idx]);
+          var dsym = decode(distTree);
+          if (dsym >= DBASE.length) throw new Error('距离码异常');
+          var dist = DBASE[dsym] + bits(DEXT[dsym]);
+          if (dist > out.length) throw new Error('回溯距离异常');
+          for (var k = 0; k < length; k++) out.push(out[out.length - dist]);
+        }
+      }
+    }
+
+    return new Uint8Array(out);
+  }
+
+  /* ============ ZIP ============ */
+
+  function parseZip(buffer) {
+    var dv = new DataView(buffer);
+    var len = buffer.byteLength;
+    var eocd = -1;
+    var min = Math.max(0, len - 22 - 65535);
+    for (var i = len - 22; i >= min; i--) {
+      if (dv.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+    }
+    if (eocd < 0) throw new Error('不是有效的 xlsx 文件');
+    var count = dv.getUint16(eocd + 10, true);
+    var off = dv.getUint32(eocd + 16, true);
+    var entries = new Map();
+    for (var k = 0; k < count; k++) {
+      if (off + 46 > len) break;
+      if (dv.getUint32(off, true) !== 0x02014b50) break;
+      var method = dv.getUint16(off + 10, true);
+      var compSize = dv.getUint32(off + 20, true);
+      var nameLen = dv.getUint16(off + 28, true);
+      var extraLen = dv.getUint16(off + 30, true);
+      var commentLen = dv.getUint16(off + 32, true);
+      var localOff = dv.getUint32(off + 42, true);
+      var name = new TextDecoder('utf-8').decode(new Uint8Array(buffer, off + 46, nameLen));
+      entries.set(name, { method: method, compSize: compSize, localOff: localOff });
+      off += 46 + nameLen + extraLen + commentLen;
+    }
+    return { buffer: buffer, dv: dv, entries: entries };
+  }
+
+  function readEntry(zip, entry) {
+    if (!entry) throw new Error('缺少内部文件');
+    var off = entry.localOff;
+    if (zip.dv.getUint32(off, true) !== 0x04034b50) throw new Error('压缩包结构异常');
+    var nameLen = zip.dv.getUint16(off + 26, true);
+    var extraLen = zip.dv.getUint16(off + 28, true);
+    var start = off + 30 + nameLen + extraLen;
+    var raw = new Uint8Array(zip.buffer, start, entry.compSize);
+    if (entry.method === 0) return raw;
+    if (entry.method === 8) return inflateRaw(raw);
+    throw new Error('不支持的文件压缩方式');
+  }
+
+  function resolveSheetPath(zip) {
+    var def = 'xl/worksheets/sheet1.xml';
+    if (zip.entries.has(def)) return def;
+    try {
+      var wb = textOf(readEntry(zip, zip.entries.get('xl/workbook.xml')));
+      var sm = /<sheet\b[^>]*\br:id="([^"]+)"/.exec(wb);
+      if (!sm) return null;
+      var relsName = 'xl/_rels/workbook.xml.rels';
+      if (!zip.entries.has(relsName)) return null;
+      var rels = textOf(readEntry(zip, zip.entries.get(relsName)));
+      var re = new RegExp('<Relationship\\b[^>]*\\bId="' + sm[1] + '"[^>]*>', 'g');
+      var hit = re.exec(rels);
+      if (!hit) return null;
+      var tm = /\bTarget="([^"]+)"/.exec(hit[0]);
+      if (!tm) return null;
+      var target = tm[1];
+      if (target.charAt(0) === '/') return target.slice(1);
+      if (target.indexOf('xl/') === 0) return target;
+      return 'xl/' + target;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function parseSharedStrings(xml) {
+    var out = [];
+    var re = /<si\b[^>]*>([\s\S]*?)<\/si>/g;
+    var m;
+    while ((m = re.exec(xml))) {
+      var s = '';
+      var tre = /<t\b[^>]*>([\s\S]*?)<\/t>/g;
+      var t;
+      while ((t = tre.exec(m[1]))) s += unescapeXml(t[1]);
+      out.push(s);
+    }
+    return out;
+  }
+
+  function parseSheet(xml) {
+    var rows = new Map();
+    var rowRe = /<row\b[^>]*\br="(\d+)"[^>]*>([\s\S]*?)<\/row>/g;
+    var rm;
+    while ((rm = rowRe.exec(xml))) {
+      var rowNum = parseInt(rm[1], 10);
+      var cells = {};
+      var cellRe = /<c\b([^>]*?)(?:\/>|>([\s\S]*?)<\/c>)/g;
+      var cm;
+      while ((cm = cellRe.exec(rm[2]))) {
+        var attrs = cm[1];
+        var inner = cm[2] || '';
+        var refM = /\br="([A-Z]+)(\d+)"/.exec(attrs);
+        if (!refM) continue;
+        var col = refM[1];
+        var tM = /\bt="([^"]+)"/.exec(attrs);
+        var type = tM ? tM[1] : '';
+        var val = '';
+        if (type === 'inlineStr') {
+          var tre = /<t\b[^>]*>([\s\S]*?)<\/t>/g;
+          var t2;
+          while ((t2 = tre.exec(inner))) val += unescapeXml(t2[1]);
+        } else {
+          var vm = /<v\b[^>]*>([\s\S]*?)<\/v>/.exec(inner);
+          if (vm) val = unescapeXml(vm[1]);
+        }
+        cells[col] = { t: type, v: val };
+      }
+      rows.set(rowNum, cells);
+    }
+    return rows;
+  }
+
+  function cellText(cell, sst) {
+    if (!cell) return '';
+    if (cell.t === 's') {
+      var idx = parseInt(cell.v, 10);
+      return isNaN(idx) ? '' : (sst[idx] == null ? '' : sst[idx]);
+    }
+    return cell.v == null ? '' : String(cell.v);
+  }
+
+  function locateNameColumn(rows, sst) {
+    var rowNums = [];
+    rows.forEach(function (_, k) { rowNums.push(k); });
+    rowNums.sort(function (a, b) { return a - b; });
+    if (!rowNums.length) return null;
+    var firstRow = rowNums[0];
+    var limit = firstRow + 4;
+    for (var i = 0; i < rowNums.length; i++) {
+      var rn = rowNums[i];
+      if (rn > limit) break;
+      var cells = rows.get(rn);
+      for (var col in cells) {
+        if (!Object.prototype.hasOwnProperty.call(cells, col)) continue;
+        var txt = norm(cellText(cells[col], sst));
+        if (txt && txt.indexOf('姓名') !== -1) return { row: rn, col: col };
+      }
+    }
+    return null;
+  }
+
+  function extractFromRows(rows, sst) {
+    var rowNums = [];
+    rows.forEach(function (_, k) { rowNums.push(k); });
+    rowNums.sort(function (a, b) { return a - b; });
+    if (!rowNums.length) return null;
+
+    var title = '';
+    for (var i = 0; i < rowNums.length && !title; i++) {
+      var cs = rows.get(rowNums[i]);
+      var cols = Object.keys(cs).sort();
+      for (var j = 0; j < cols.length; j++) {
+        var tv = cellText(cs[cols[j]], sst).trim();
+        if (tv) { title = tv; break; }
+      }
+    }
+
+    var loc = locateNameColumn(rows, sst);
+    var warn = '';
+    if (!loc) {
+      loc = { row: 2, col: 'B' };
+      warn = '未找到「姓名」表头，按第 2 行表头、B 列读取。';
+    }
+
+    var students = [];
+    var seen = {};
+    var dupGroups = 0;
+    for (var r = 0; r < rowNums.length; r++) {
+      var rn2 = rowNums[r];
+      if (rn2 <= loc.row) continue;
+      var cells2 = rows.get(rn2);
+      var raw = cellText(cells2[loc.col], sst).trim();
+      if (!raw) continue;
+      if (norm(raw).indexOf('姓名') !== -1) continue;
+      if (/^\d+$/.test(raw)) continue;
+      var seqRaw = cellText(cells2['A'], sst).trim();
+      var seq = parseInt(seqRaw, 10);
+      if (isNaN(seq)) seq = rn2;
+      if (seen[raw]) { dupGroups++; continue; }
+      seen[raw] = 1;
+      students.push({ name: raw, seq: seq });
+    }
+
+    return {
+      title: title,
+      headerRow: loc.row,
+      nameCol: loc.col,
+      students: students,
+      dupGroups: dupGroups,
+      warn: warn
+    };
+  }
+
+  function listSheets(zip) {
+    var out = [];
+    zip.entries.forEach(function (_, name) {
+      if (/^xl\/worksheets\/sheet[0-9]+\.xml$/i.test(name)) out.push(name);
+    });
+    out.sort(function (a, b) {
+      var ma = /([0-9]+)\.xml$/i.exec(a);
+      var mb = /([0-9]+)\.xml$/i.exec(b);
+      return (ma ? parseInt(ma[1], 10) : 0) - (mb ? parseInt(mb[1], 10) : 0);
+    });
+    if (!out.length) {
+      var p = resolveSheetPath(zip);
+      if (p) out.push(p);
+    }
+    return out;
+  }
+
+  function parseWorkbookBuffer(buffer, fileName) {
+    var zip = parseZip(buffer);
+    var sst = [];
+    if (zip.entries.has('xl/sharedStrings.xml')) {
+      sst = parseSharedStrings(textOf(readEntry(zip, zip.entries.get('xl/sharedStrings.xml'))));
+    }
+    var paths = listSheets(zip);
+    if (!paths.length) throw new Error('找不到工作表');
+
+    var best = null;
+    for (var s = 0; s < paths.length; s++) {
+      var rows;
+      try {
+        rows = parseSheet(textOf(readEntry(zip, zip.entries.get(paths[s]))));
+      } catch (e) {
+        continue;
+      }
+      var got = extractFromRows(rows, sst);
+      if (!got) continue;
+      if (got.students.length) { best = got; break; }
+      if (!best) best = got;
+    }
+    if (!best) throw new Error('工作表是空的');
+
+    best.fileName = fileName;
+    best.sheetPath = paths.length ? paths[0] : '';
+    return best;
+  }
+
+  /* ============ 文件与匹配 ============ */
+
+  function fileArray(fileList) {
+    var arr = [];
+    for (var i = 0; i < fileList.length; i++) arr.push(fileList[i]);
+    return arr;
+  }
+
+  function toEntries(fileList) {
+    return fileArray(fileList).map(function (f) {
+      var rel = f.webkitRelativePath || f.name;
+      var parts = rel.split('/');
+      return {
+        file: f,
+        name: f.name,
+        rel: rel,
+        inner: parts.slice(1).join('/'),
+        root: parts[0] || ''
+      };
+    });
+  }
+
+  /* ============ 目录句柄 + 实时监控 ============
+     用 showDirectoryPicker 拿到的是「目录句柄」，不是一次性快照，所以可以随时重新列举：
+     页面开着就一直盯，学生中途交了文件，几秒内自动归到已交。
+     file:// 下该 API 是可用的（isSecureContext=true），只是必须由点击触发。 */
+
+  var live = { kind: '', handle: null, timer: null, sig: '', busy: false, tried: '' };
+
+  function walkHandle(dir, prefix, rootName, out, depth) {
+    return (async function () {
+      if (depth > 6) return;
+      var it = dir.entries();
+      while (true) {
+        var r = await it.next();
+        if (r.done) break;
+        var name = r.value[0], h = r.value[1];
+        var p = prefix ? prefix + '/' + name : name;
+        if (h.kind === 'directory') {
+          await walkHandle(h, p, rootName, out, depth + 1);
+        } else {
+          out.push({ file: null, handle: h, name: name, rel: rootName + '/' + p, inner: p, root: rootName });
+        }
+      }
+    })();
+  }
+
+  async function entriesFromHandle(handle) {
+    var out = [];
+    await walkHandle(handle, '', handle.name, out, 0);
+    return out;
+  }
+
+  function sigOf(entries) {
+    var a = entries.map(function (e) { return e.inner; });
+    a.sort();
+    return a.join('\n');
+  }
+
+  function liveStamp() {
+    return new Date().toTimeString().slice(0, 8);
+  }
+
+  function stopLive() {
+    if (live.timer) { clearInterval(live.timer); live.timer = null; }
+    live.kind = '';
+    live.handle = null;
+    live.sig = '';
+    live.busy = false;
+  }
+
+  function startLive(kind, handle, entries) {
+    stopLive();
+    live.kind = kind;
+    live.handle = handle;
+    live.sig = sigOf(entries);
+    live.timer = setInterval(liveTick, 3000);
+  }
+
+  async function liveTick() {
+    if (!live.handle || live.busy) return;
+    live.busy = true;
+    var kind = live.kind;
+    try {
+      var entries = await entriesFromHandle(live.handle);
+      var sig = sigOf(entries);
+      if (sig === live.sig) return;
+      var before = live.sig ? live.sig.split('\n').length : 0;
+      var delta = entries.length - before;
+      live.sig = sig;
+      if (kind === 'single') {
+        await loadSingle(entries, { live: true, keepBatch: state.singleBatch, delta: delta });
+      } else {
+        await loadBatch(entries, { live: true, delta: delta });
+      }
+    } catch (e) {
+      stopLive();
+      var st = document.getElementById(kind === 'single' ? 'singleStatus' : 'batchStatus');
+      if (st) {
+        st.className = 'status bad';
+        st.textContent = '实时监控已中断（' + ((e && e.name) || '读取失败') + '），请重新点一次「选择班级文件夹」';
+      }
+    } finally {
+      live.busy = false;
+    }
+  }
+
+  function submittedSet(entries, students) {    var cand = entries.filter(function (e) { return EXT_RE.test(e.name); })
+      .map(function (e) { return norm(e.inner); });
+    var hit = new Set();
+    for (var i = 0; i < students.length; i++) {
+      var n = norm(students[i].name);
+      if (!n) continue;
+      for (var j = 0; j < cand.length; j++) {
+        if (cand[j].indexOf(n) !== -1) { hit.add(students[i].name); break; }
+      }
+    }
+    return hit;
+  }
+
+  function studentsOfClass(cls) {
+    var seen = {}, list = [];
+    state.books.forEach(function (b) {
+      if (!b.ok || b.className !== cls) return;
+      b.students.forEach(function (st) {
+        if (seen[st.name]) return;
+        seen[st.name] = 1;
+        list.push(st);
+      });
+    });
+    list.sort(function (a, b) { return a.seq - b.seq; });
+    return list;
+  }
+
+  function findMark(cls, name, batch) {
+    var exact = null, any = null;
+    for (var i = 0; i < state.marks.length; i++) {
+      var m = state.marks[i];
+      if (m['class'] !== cls || m.name !== name) continue;
+      if (m.batch === batch) { exact = m; break; }
+      if (!m.batch) any = m;
+    }
+    return exact || any;
+  }
+
+  function setMark(cls, name, type, batch) {
+    var next = [];
+    for (var i = 0; i < state.marks.length; i++) {
+      var m = state.marks[i];
+      if (m['class'] === cls && m.name === name && m.batch === (batch || '')) continue;
+      next.push(m);
+    }
+    if (type) {
+      next.push({
+        'class': cls, name: name, type: type, batch: batch || '',
+        note: '', at: new Date().toISOString()
+      });
+    }
+    state.marks = next;
+    state.dirty = true;
+    recomputeSingle();
+    recomputeBatch();
+    renderAll();
+  }
+
+  function clearMark(cls, name) {
+    var next = [];
+    for (var i = 0; i < state.marks.length; i++) {
+      var m = state.marks[i];
+      if (m['class'] === cls && m.name === name) continue;
+      next.push(m);
+    }
+    state.marks = next;
+    state.dirty = true;
+    recomputeSingle();
+    recomputeBatch();
+    renderAll();
+  }
+
+  function isExcluded(cls, batch) {
+    for (var i = 0; i < state.excluded.length; i++) {
+      if (state.excluded[i]['class'] === cls && state.excluded[i].batch === batch) return true;
+    }
+    return false;
+  }
+
+  function toggleExclude(cls, batch) {
+    var next = [], found = false;
+    for (var i = 0; i < state.excluded.length; i++) {
+      var e = state.excluded[i];
+      if (e['class'] === cls && e.batch === batch) { found = true; continue; }
+      next.push(e);
+    }
+    if (!found) next.push({ 'class': cls, batch: batch, at: new Date().toISOString() });
+    state.excluded = next;
+    state.dirty = true;
+    recomputeSingle();
+    recomputeBatch();
+    renderAll();
+  }
+
+  /* ============ 单次作业 ============ */
+
+  function computeSingle(entries, students, batchName) {
+    var cls = state.classPick;
+    var submitted = submittedSet(entries, students);
+    var missing = [], excused = [], present = [], makeup = [], absent = [];
+    for (var i = 0; i < students.length; i++) {
+      var st = students[i];
+      var m = findMark(cls, st.name, batchName);
+      if (m && m.type === 'absent') {
+        missing.push(st);
+        absent.push(st.name);
+        continue;
+      }
+      if (submitted.has(st.name)) {
+        present.push(st.name);
+      } else if (m && m.type === 'makeup') {
+        present.push(st.name);
+        makeup.push(st.name);
+      } else if (m && (m.type === 'leave' || m.type === 'exempt')) {
+        excused.push({ name: st.name, type: m.type, whole: !m.batch });
+      } else {
+        missing.push(st);
+      }
+    }
+    return {
+      batchName: batchName,
+      students: students,
+      submitted: submitted,
+      present: present,
+      excused: excused,
+      missing: missing,
+      makeup: makeup,
+      absent: absent,
+      fileCount: entries.filter(function (e) { return EXT_RE.test(e.name); }).length
+    };
+  }
+
+  /* ============ 批量作业 ============ */
+
+  function computeBatch(entries, students, cls) {
+    var map = new Map();
+    entries.forEach(function (e) {
+      if (!EXT_RE.test(e.name)) return;
+      var seg = e.inner.split('/');
+      if (seg.length < 2) return;
+      var b = seg[0] || '';
+      if (!b) return;
+      if (!map.has(b)) map.set(b, []);
+      map.get(b).push(e);
+    });
+    var names = [];
+    map.forEach(function (_, k) { names.push(k); });
+    function dateKey(n) {
+      var mm = /^(\d{8})/.exec(n);
+      return mm ? parseInt(mm[1], 10) : 99999999;
+    }
+    names.sort(function (a, b) {
+      var ka = dateKey(a), kb = dateKey(b);
+      if (ka !== kb) return ka - kb;
+      var da = DATE_RE.test(a), db = DATE_RE.test(b);
+      if (da !== db) return da ? -1 : 1;
+      return a.localeCompare(b, 'zh-Hans-CN');
+    });
+
+    var rows = names.map(function (b) {
+      var es = map.get(b);
+      var one = computeSingle(es, students, b);
+      return {
+        batch: b,
+        fileCount: es.length,
+        missing: one.missing,
+        excused: one.excused,
+        presentCount: one.present.length,
+        present: one.present,
+        excluded: isExcluded(cls, b)
+      };
+    });
+
+    var active = rows.filter(function (r) { return !r.excluded; });
+    var totalMiss = 0, totalExcused = 0, totalPresent = 0;
+    active.forEach(function (r) {
+      totalMiss += r.missing.length;
+      totalExcused += r.excused.length;
+      totalPresent += r.presentCount;
+    });
+
+    var perStudent = students.map(function (st) {
+      var cnt = 0, list = [], presentCnt = 0, excusedCnt = 0;
+      active.forEach(function (r) {
+        for (var i = 0; i < r.missing.length; i++) {
+          if (r.missing[i].name === st.name) { cnt++; list.push(r.batch); break; }
+        }
+        if (r.present.indexOf(st.name) !== -1) presentCnt++;
+        for (var j = 0; j < r.excused.length; j++) {
+          if (r.excused[j].name === st.name) { excusedCnt++; break; }
+        }
+      });
+      return { name: st.name, seq: st.seq, count: cnt, batches: list, present: presentCnt, excused: excusedCnt };
+    });
+    perStudent.sort(function (a, b) {
+      if (b.count !== a.count) return b.count - a.count;
+      return a.seq - b.seq;
+    });
+
+    /* 每次都交：在每一个「计入」的作业里都算已交（补交算交），且没有被请假/免交/人工标未交扣掉 */
+    var perfect = [];
+    if (active.length) {
+      students.forEach(function (st) {
+        for (var i = 0; i < active.length; i++) {
+          if (active[i].present.indexOf(st.name) === -1) return;
+        }
+        perfect.push({ name: st.name, seq: st.seq });
+      });
+    }
+
+    return {
+      rows: rows,
+      activeCount: active.length,
+      totalCount: rows.length,
+      rosterSize: students.length,
+      dueCount: students.length * active.length,
+      missCount: totalMiss,
+      excusedCount: totalExcused,
+      presentCount: totalPresent,
+      perStudent: perStudent,
+      perfect: perfect,
+      missStudentCount: perStudent.filter(function (p) { return p.count > 0; }).length
+    };
+  }
+
+  /* ============ 重算（标记、勾选变化后调用） ============ */
+
+  function groupByBatch(entries) {
+    var map = new Map();
+    entries.forEach(function (e) {
+      if (!EXT_RE.test(e.name)) return;
+      var seg = e.inner.split('/');
+      if (seg.length < 2) return;
+      var b = seg[0] || '';
+      if (!b) return;
+      if (!map.has(b)) map.set(b, []);
+      map.get(b).push(e);
+    });
+    var out = [];
+    map.forEach(function (v, k) { out.push({ batch: k, entries: v }); });
+    function dk(n) {
+      var mm = /^(\d{8})/.exec(n);
+      return mm ? parseInt(mm[1], 10) : 99999999;
+    }
+    out.sort(function (a, b) {
+      var ka = dk(a.batch), kb = dk(b.batch);
+      if (ka !== kb) return ka - kb;
+      return a.batch.localeCompare(b.batch, 'zh-Hans-CN');
+    });
+    return out;
+  }
+
+  function defaultBatchOf(groups) {
+    var last = null;
+    for (var i = 0; i < groups.length; i++) {
+      if (/^\d{8}/.test(groups[i].batch)) last = groups[i];
+    }
+    if (!last) last = groups[groups.length - 1];
+    return last.batch;
+  }
+
+  function recomputeSingle() {
+    if (!state.singleSrc) { state.single = null; return; }
+    var src = state.singleSrc;
+    var students = studentsOfClass(state.classPick);
+    if (!students.length) { state.single = null; return; }
+    var entries = src.entries, batchName = src.batchName;
+    if (src.groups && src.groups.length) {
+      if (!state.singleBatch) state.singleBatch = defaultBatchOf(src.groups);
+      var pick = null;
+      for (var i = 0; i < src.groups.length; i++) {
+        if (src.groups[i].batch === state.singleBatch) { pick = src.groups[i]; break; }
+      }
+      if (!pick) pick = src.groups[src.groups.length - 1];
+      state.singleBatch = pick.batch;
+      entries = pick.entries;
+      batchName = pick.batch;
+    }
+    var r = computeSingle(entries, students, batchName);
+    r.looksLikeClass = src.looksLikeClass;
+    /* 用「文件名能对上几个人」判断，而不是「最终算不算已交」——
+       后者会被请假/免交/人工标未交影响，全标未交时会误弹自查框 */
+    r.tooFew = r.submitted.size === 0;
+    r.clsHint = src.clsHint;
+    r.clsErr = src.clsErr;
+    state.single = r;
+  }
+
+  function recomputeBatch() {
+    if (!state.batchSrc) { state.batch = null; return; }
+    var src = state.batchSrc;
+    var students = studentsOfClass(state.classPick);
+    if (!students.length) { state.batch = null; return; }
+    var b = computeBatch(src.entries, students, state.classPick);
+    b.root = src.root;
+    b.clsHint = src.clsHint;
+    b.clsErr = src.clsErr;
+    state.batch = b;
+  }
+
+  /* ============ 渲染 ============ */
+
+  function renderRoster() {
+    var box = document.getElementById('rosterList');
+    if (!state.books.length) { box.innerHTML = ''; return; }
+    var html = '';
+    state.books.forEach(function (b, i) {
+      if (!b.ok) {
+        html += '<div class="book skip"><div class="bhead">' +
+          '<span class="bname">' + esc(b.fileName) + '</span>' +
+          '<span class="badge gray">未读取</span>' +
+          '<span class="mini">' + esc(b.err || '没有读到名单') + '</span></div></div>';
+        return;
+      }
+      var names = b.students.map(function (s) {
+        return '<span><i>' + esc(s.seq) + '</i>' + esc(s.name) + '</span>';
+      }).join('');
+      html += '<div class="book">' +
+        '<div class="bhead">' +
+          '<span class="bname">' + esc(b.fileName) + '</span>' +
+          '<span class="badge">' + esc(b.title || '无标题') + '</span>' +
+          '<span class="badge gray">' + b.students.length + ' 人</span>' +
+          (b.dupGroups ? '<span class="badge warn">重名 ' + b.dupGroups + ' 组已合并</span>' : '') +
+          '<span class="mini">姓名列 ' + esc(b.nameCol) + '，表头第 ' + esc(b.headerRow) + ' 行</span>' +
+          '<span class="mini">班级</span>' +
+          '<input class="clsInput clsFit" data-idx="' + i + '" title="' + esc((b.className)) + '" value="' + esc((b.className)) + '">' +
+        '</div>' +
+        (b.warn ? '<div class="tip warn">' + esc(b.warn) + '</div>' : '') +
+        '<details><summary>查看姓名清单</summary><div class="namegrid">' + names + '</div></details>' +
+      '</div>';
+    });
+    box.innerHTML = html;
+
+    var fits = box.querySelectorAll('.clsFit');
+    for (var f = 0; f < fits.length; f++) fitInputWidth(fits[f]);
+
+    var inputs = box.querySelectorAll('.clsInput');
+    for (var k = 0; k < inputs.length; k++) {
+      inputs[k].addEventListener('input', function (ev) {
+        var idx = parseInt(ev.target.getAttribute('data-idx'), 10);
+        var val = ev.target.value.trim();
+        if (!state.books[idx]) return;
+        state.books[idx].className = val;
+        ev.target.title = ev.target.value.trim();
+        fitInputWidth(ev.target);
+        fillClassPick();
+        if (state.mode === 'single') renderSingle(); else renderBatch();
+      });
+    }
+  }
+
+  function classList() {
+    var seen = {}, out = [];
+    state.books.forEach(function (b) {
+      if (!b.ok || !b.className) return;
+      if (seen[b.className]) return;
+      seen[b.className] = 1;
+      out.push(b.className);
+    });
+    return out;
+  }
+
+  function fillClassPick() {
+    var list = classList();
+    var row = document.getElementById('classPickRow');
+    var sel = document.getElementById('classPick');
+    var hint = document.getElementById('classPickHint');
+    if (!list.length) {
+      row.hidden = true;
+      state.classPick = '';
+      return;
+    }
+    row.hidden = false;
+    if (list.indexOf(state.classPick) === -1) state.classPick = list[0];
+    var opts = '';
+    list.forEach(function (c) {
+      opts += '<option value="' + esc(c) + '"' + (c === state.classPick ? ' selected' : '') + '>' + esc((c)) + '</option>';
+    });
+    sel.innerHTML = opts;
+    var n = studentsOfClass(state.classPick).length;
+    hint.textContent = '该班名单 ' + n + ' 人';
+  }
+
+  /* 选的是班级文件夹时，以文件夹名作为班级名（用户自己起的名字最准）。
+     只在「本次只导入 1 份名单」且目录名像班级名（含数字、不以 8 位日期开头）时生效。 */
+  function applyDirName(dirName) {
+    var d = String(dirName || '').trim();
+    if (!d) return '';
+    if (!/\d/.test(d)) return '';
+    if (/^\d{8}/.test(d)) return '';
+    var list = classList();
+    if (list.length !== 1) return '';
+    if (list[0] === d) return '';
+    for (var i = 0; i < state.books.length; i++) {
+      if (state.books[i].ok && state.books[i].className) state.books[i].className = d;
+    }
+    state.classPick = d;
+    fillClassPick();
+    renderMarkCls();
+    return d;
+  }
+
+  /* 数一数有多少个子文件夹的名字能对上名单里的学生姓名 —— 对上就说明这一层是学生个人文件夹 */
+  function nameLikeCount(groups, students) {
+    if (!groups || !groups.length || !students || !students.length) return 0;
+    var hits = 0;
+    for (var i = 0; i < groups.length; i++) {
+      var g = norm(groups[i].batch);
+      if (!g) continue;
+      for (var j = 0; j < students.length; j++) {
+        var n = norm(students[j].name);
+        if (n && g.indexOf(n) !== -1) { hits++; break; }
+      }
+    }
+    return hits;
+  }
+
+  /* 匹配人数过少时的自查提示：先查第二项选择层级，再查第一项比对班级 */
+  function diagTipHtml(s, src) {
+    var cls = state.classPick || '';
+    var root = (src && src.root) || '';
+    var groupN = (src && src.groups && src.groups.length) || 0;
+    var deep = !!(src && src.deepLevel);
+    var mism = !!(src && src.rootMismatch);
+    var hiOne = deep, hiTwo = !deep && mism;
+    /* 已经判定「选深了一层」时，文件夹名和班级名对不上是正常的，不能再拿它当第一项选错的证据 */
+    var mismReal = mism && !deep;
+
+    var one, two;
+    if (deep) {
+      one = '<b' + (hiOne ? ' class="hi"' : '') + '>第二项选深了一层' + (hiOne ? '（最可能的原因）' : '') +
+        '</b>：当前选的「' + esc(root) + '」里面 ' + groupN + ' 个子文件夹全都是学生姓名，' +
+        '说明这是<b>某一次作业的内部</b>，不是班级文件夹。请回第二项改选<b>它的上一级</b>' +
+        '（班级文件夹，如 <code>CADwork\\' + esc(cls || '班级名') + '</code>），再用这里的下拉框选「' + esc(root) + '」这一次。';
+    } else {
+      one = '<b>第二项核对选择层级</b>：现在选的是「' + esc(root) + '」，读进来 ' + groupN +
+        ' 个子文件夹当成 ' + groupN + ' 次作业。如果它其实只是某一次作业的文件夹，请回第二项改选<b>它的上一级</b>班级文件夹。';
+    }
+
+    if (mismReal) {
+      two = '<b' + (hiTwo ? ' class="hi"' : '') + '>第一项「当前比对班级」可能选错了' + (hiTwo ? '（最可能的原因）' : '') +
+        '</b>：现在比对的是「' + esc(cls) + '」（' + s.students.length + ' 人），但选的文件夹叫「' + esc(root) +
+        '」，两边名字对不上。请回第一项把「当前比对班级」改成这个文件夹所属的班级，再重新选文件夹。';
+    } else {
+      two = '<b>第一项核对「当前比对班级」</b>：现在比对的是「' + esc(cls || '未确定') + '」（' +
+        s.students.length + ' 人）。如果这次要查的就是这个班，这一项没问题，不用动；如果不是，请回第一项换班，再重新选文件夹。';
+    }
+
+    var three = '<b>两条都没问题</b>，那就是学生文件名里<b>没写姓名</b>（只写了机位号、学号、或者就叫「新建」），' +
+      '程序认不出是谁。未交名单已照常列出，请人工核对；核对后可对个别学生点「补交」或「标为未交」。';
+
+    return '<div class="tip warn diagtips"><b>这 ' + s.fileCount + ' 个文件里，一个都没对上班里的人</b>（名单 ' +
+      s.students.length + ' 人）。先按下面顺序自查：' +
+      '<ol class="diag"><li>' + one + '</li><li>' + two + '</li><li>' + three + '</li></ol></div>';
+  }
+
+  function statsHtml(items) {
+    return '<div class="stats">' + items.map(function (it) {
+      return '<div class="stat ' + (it.cls || '') + '"><b>' + esc(it.value) + '</b><span>' + esc(it.label) + '</span></div>';
+    }).join('') + '</div>';
+  }
+
+  function renderSingle() {
+    var box = document.getElementById('singleOut');
+    var s = state.single;
+    if (!s) { box.innerHTML = ''; return; }
+    var cls = state.classPick;
+    var src = state.singleSrc;
+    var hasGroups = !!(src && src.groups && src.groups.length > 1);
+    var html = '';
+    if (s.clsHint) html += '<div class="tip clshint ' + (s.clsErr ? 'err' : 'warn') + '">' + esc(s.clsHint) + '</div>';
+
+    if (hasGroups) {
+      var selNote = src.deepLevel
+        ? '<span class="status bad">这 ' + src.groups.length + ' 项其实是学生个人文件夹，不是作业次数 —— 说明选深了一层</span>'
+        : '<span class="status">共 ' + src.groups.length + ' 次作业，这里一次只看一次；要看全班汇总请用「批量检查」</span>';
+      html += '<div class="row" style="margin:0 0 12px;align-items:center">' +
+        '<label style="font-weight:600">这次查看：</label>' +
+        '<select id="singleBatchSel" style="min-width:220px">' +
+        src.groups.map(function (g) {
+          return '<option value="' + esc(g.batch) + '"' + (g.batch === state.singleBatch ? ' selected' : '') +
+            '>' + esc(g.batch) + '（' + g.entries.length + ' 个文件）</option>';
+        }).join('') +
+        '</select>' + selNote +
+        '</div>';
+    }
+
+    if (s.tooFew) html += diagTipHtml(s, src);
+
+    html += statsHtml([
+      { label: '名单人数', value: s.students.length },
+      { label: '已交', value: s.present.length, cls: 'green' },
+      { label: '未交', value: s.missing.length, cls: 'red' },
+      { label: '请假/免交', value: s.excused.length, cls: 'orange' }
+    ]);
+
+    if (state.dirty && marksOfClass(state.classPick).length) {
+      html += '<div class="tip warn">本次检查已标 <b>' + marksOfClass(state.classPick).length + '</b> 条，' +
+        '还没写进 <code>' + esc(markFileOf(state.classPick)) + '</code>，记得导出。' +
+        '<button class="btn sm" id="btnExportInline" style="margin-left:8px">导出本班标记</button></div>';
+    }
+
+    html += '<div class="sec-title">未交名单（' + s.missing.length + ' 人）' +
+      '<button class="btn sm" id="btnCopySingle">复制未交名单</button>' +
+      '<button class="btn sm" id="btnCsvSingle">导出 CSV</button></div>';
+
+    if (!s.missing.length) {
+      html += '<div class="empty">这次全部都交了。</div>';
+    } else {
+      var abSet = {};
+      (s.absent || []).forEach(function (n) { abSet[n] = 1; });
+      html += '<div class="miss">' + s.missing.map(function (st) {
+        if (abSet[st.name]) {
+          return '<div class="stu" data-name="' + esc(st.name) + '" style="border-color:#ef9a9a;background:#fdf2f2">' +
+            '<b style="color:#c62828">' + esc(st.name) + '</b>' +
+            '<span class="tag" style="background:#ffebee;color:#c62828;border-color:#ef9a9a">人工标为未交</span>' +
+            '<div class="ops"><button class="btn sm" data-act="clear" data-name="' + esc(st.name) + '">撤销</button></div></div>';
+        }
+        return '<div class="stu" data-name="' + esc(st.name) + '">' +
+          '<b>' + esc(st.name) + '</b>' +
+          '<div class="ops">' +
+            '<button class="btn sm" data-act="leave" data-name="' + esc(st.name) + '">请假</button>' +
+            '<button class="btn sm" data-act="exemptAsk" data-name="' + esc(st.name) + '">免交</button>' +
+            '<button class="btn sm" data-act="makeup" data-name="' + esc(st.name) + '">补交</button>' +
+          '</div>' +
+        '</div>';
+      }).join('') + '</div>';
+    }
+
+    if (s.excused.length) {
+      html += '<div class="sec-title">请假 / 免交（' + s.excused.length + ' 人）</div><div class="miss">' +
+        s.excused.map(function (e) {
+          var lbl = (e.whole ? '整学期' : '本次') + (e.type === 'leave' ? '请假' : '免交');
+          var st2 = e.whole
+            ? 'border:1px solid #ef6c00;font-weight:700'
+            : 'border:1px dashed #bcaaa4';
+          return '<div class="stu" style="border-color:#ffb74d"><b style="color:#ef6c00">' + esc(e.name) + '</b>' +
+            '<span class="tag ' + e.type + '" style="' + st2 + '">' + lbl + '</span>' +
+            '<div class="ops"><button class="btn sm" data-act="clear" data-name="' + esc(e.name) + '">撤销</button></div></div>';
+        }).join('') + '</div>';
+    }
+
+    var mkSet = {};
+    (s.makeup || []).forEach(function (n) { mkSet[n] = 1; });
+    var mkCount = (s.makeup || []).length;
+    html += '<details style="margin-top:16px"><summary>已交名单（' + s.present.length + ' 人' +
+      (mkCount ? '，其中 ' + mkCount + ' 人是补交' : '') + '）</summary><div class="namegrid">' +
+      s.present.map(function (n) {
+        if (!mkSet[n]) {
+          return '<span>' + esc(n) +
+            '<button class="btn sm" data-act="markAbsent" data-name="' + esc(n) + '" style="margin-left:6px;padding:1px 7px;font-size:12px;vertical-align:middle">标为未交</button></span>';
+        }
+        return '<span style="border-color:#a5d6a7;background:#f1f8e9">' + esc(n) +
+          '<button class="btn sm" data-act="clear" data-name="' + esc(n) + '" style="margin-left:6px;padding:1px 7px;font-size:12px;vertical-align:middle">撤销补交</button></span>';
+      }).join('') + '</div></details>';
+
+    box.innerHTML = html;
+
+    var sbs = document.getElementById('singleBatchSel');
+    if (sbs) sbs.addEventListener('change', function () {
+      state.singleBatch = sbs.value;
+      recomputeSingle();
+      renderSingle();
+    });
+
+    var cp = document.getElementById('btnCopySingle');
+    if (cp) cp.addEventListener('click', function () {
+      copyText(s.missing.map(function (x) { return x.name; }).join('、'), function (ok) {
+        document.getElementById('singleStatus').textContent = ok ? '未交名单已复制' : '复制失败，请手动选中';
+      });
+    });
+    var csv = document.getElementById('btnCsvSingle');
+    if (csv) csv.addEventListener('click', function () {
+      var lines = ['姓名,状态'];
+      s.missing.forEach(function (x) { lines.push(csvCell(x.name) + ',未交'); });
+      s.present.forEach(function (n) { lines.push(csvCell(n) + ',已交'); });
+      s.excused.forEach(function (e) {
+        lines.push(csvCell(e.name) + ',' + (e.whole ? '整学期' : '本次') + (e.type === 'leave' ? '请假' : '免交'));
+      });
+      downloadText('未交名单_' + (state.classPick) + '_' + (s.batchName || '') + '.csv', lines.join('\r\n'));
+    });
+    var ex = document.getElementById('btnExportInline');
+    if (ex) ex.addEventListener('click', exportMarks);
+
+    box.onclick = function (ev) {
+      var t = ev.target;
+      while (t && t !== box && !(t.getAttribute && t.getAttribute('data-act'))) t = t.parentNode;
+      if (!t || t === box || !t.getAttribute) return;
+      var name = t.getAttribute('data-name');
+      var act = t.getAttribute('data-act');
+      if (act === 'clear') { clearMark(state.classPick, name); return; }
+      if (act === 'markAbsent') { setMark(state.classPick, name, 'absent', s.batchName); return; }
+      if (act === 'exemptAsk') {
+        t.parentNode.innerHTML = '<span style="font-size:12px;color:#666;margin-right:4px">免交范围：</span>' +
+          '<button class="btn sm" data-act="exempt" data-name="' + esc(name) + '">仅这一次</button>' +
+          '<button class="btn sm" data-act="exemptAll" data-name="' + esc(name) + '">整学期</button>' +
+          '<button class="btn sm" data-act="exemptCancel" data-name="' + esc(name) + '">取消</button>';
+        return;
+      }
+      if (act === 'exemptCancel') { renderSingle(); return; }
+      if (act === 'exemptAll') { setMark(state.classPick, name, 'exempt', ''); return; }
+      setMark(state.classPick, name, act, s.batchName);
+    };
+  }
+
+  function renderBatch() {
+    var box = document.getElementById('batchOut');
+    var b = state.batch;
+    if (!b) { box.innerHTML = ''; renderScore(); return; }
+    var html = '';
+    if (b.clsHint) html += '<div class="tip clshint ' + (b.clsErr ? 'err' : 'warn') + '">' + esc(b.clsHint) + '</div>';
+    html += '<div class="tip info">未交人数明显偏多时，多半是学生文件名里没写姓名、或只写了机位号。核对后可以把这一次的「计入」勾掉，只影响统计，不动任何文件。</div>';
+
+    html += statsHtml([
+      { label: '有效作业次数', value: b.activeCount + ' / ' + b.totalCount },
+      { label: '应交人次', value: b.dueCount },
+      { label: '已交人次', value: b.presentCount, cls: 'green' },
+      { label: '未交人次', value: b.missCount, cls: 'red' },
+      { label: '缺交率', value: b.dueCount ? (Math.round(b.missCount / b.dueCount * 1000) / 10 + '%') : '—', cls: 'orange' }
+    ]);
+
+    if (state.dirty && (exsOfClass(state.classPick).length || marksOfClass(state.classPick).length)) {
+      html += '<div class="tip warn">本次勾掉/标记的内容还没写进 <code>' + esc(markFileOf(state.classPick)) +
+        '</code>，记得导出。' +
+        '<button class="btn sm" id="btnExportInlineB" style="margin-left:8px">导出本班标记</button></div>';
+    }
+
+    var onlyMiss = b.perStudent.filter(function (p) { return p.count > 0; });
+
+    html += '<div class="sec-title big">按人统计（' + b.perStudent.length + ' 人' +
+      (onlyMiss.length ? '，<span class="hi">批评</span>其中 ' + onlyMiss.length + ' 人累计未交' : '') + '）' +
+      '<button class="btn sm" id="btnCopyBatch">复制明细</button>' +
+      '<button class="btn sm" id="btnCsvBatch">导出 CSV</button></div>';
+
+    if (!onlyMiss.length) {
+      html += '<div class="empty">当前统计范围内没有缺交记录。</div>';
+    } else {
+      html += '<table class="tb"><thead><tr><th style="width:70px">序号</th><th>姓名</th><th style="width:100px">缺交次数</th><th>缺交的作业</th></tr></thead><tbody>' +
+        onlyMiss.map(function (p, i) {
+          return '<tr><td>' + (i + 1) + '</td><td class="bname-cell">' + esc(p.name) +
+            '<span class="mini" style="font-weight:400;margin-left:6px">名册 ' + esc(p.seq) + '</span></td>' +
+            '<td class="num">' + p.count + '</td><td class="mini">' + p.batches.map(esc).join('、') + '</td></tr>';
+        }).join('') + '</tbody></table>' +
+        '<div class="mini" style="margin-top:6px">序号按未交人数从多到少连排 1、2、3…，最后一个序号就是累计未交的人数。</div>';
+    }
+
+    html += '<div class="sec-title big"><span class="hi">表扬</span>每次都交作业的同学（共 ' + b.perfect.length + ' 人）</div>';
+    if (!b.perfect.length) {
+      html += '<div class="tip info">当前统计范围内没有全部交齐的同学。若有请假或免交，那一次不算已交。</div>';
+    } else {
+      html += '<div class="namegrid">' + b.perfect.map(function (p, i) {
+        return '<span><i>' + (i + 1) + '</i>' + esc(p.name) + '</span>';
+      }).join('') + '</div>';
+    }
+
+    html += '<div class="sec-title">按作业文件夹</div>';
+    html += '<table class="tb" id="tbFolders"><thead><tr><th style="width:170px">作业文件夹</th><th style="width:70px">文件数</th>' +
+      '<th style="width:80px">未交人数</th><th>未交名单</th><th style="width:88px">计入</th></tr></thead><tbody>' +
+      b.rows.map(function (r) {
+        var miss = r.missing.length
+          ? r.missing.map(function (x) { return x.name; }).join('、')
+          : '<span class="mini">无</span>';
+        var warnTag = r.fileCount <= 3 ? ' <span class="tag leave">文件很少</span>' : '';
+        return '<tr class="' + (r.excluded ? 'off' : '') + '">' +
+          '<td class="bname-cell">' + esc(r.batch) + warnTag + '</td>' +
+          '<td>' + r.fileCount + '</td>' +
+          '<td class="num">' + r.missing.length + '</td>' +
+          '<td>' + miss + '</td>' +
+          '<td><label class="sw"><input type="checkbox" data-ex="' + esc(r.batch) + '"' + (r.excluded ? '' : ' checked') + '><span>计入</span></label></td>' +
+          '</tr>';
+      }).join('') + '</tbody></table>';
+
+    box.innerHTML = html;
+
+    var exBoxes = box.querySelectorAll('input[data-ex]');
+    for (var i = 0; i < exBoxes.length; i++) {
+      exBoxes[i].addEventListener('change', function (ev) {
+        toggleExclude(state.classPick, ev.target.getAttribute('data-ex'));
+      });
+    }
+    var cp = document.getElementById('btnCopyBatch');
+    if (cp) cp.addEventListener('click', function () {
+      var lines = [];
+      b.perStudent.forEach(function (p) {
+        if (!p.count) return;
+        lines.push(p.name + ' 缺' + p.count + '次（' + p.batches.join('、') + '）');
+      });
+      copyText(lines.length ? lines.join('\n') : '没有缺交记录', function (ok) {
+        document.getElementById('batchStatus').textContent = ok ? '明细已复制' : '复制失败，请手动选中';
+      });
+    });
+    var csv = document.getElementById('btnCsvBatch');
+    if (csv) csv.addEventListener('click', function () {
+      var lines = ['姓名,缺交次数,缺交的作业'];
+      b.perStudent.forEach(function (p) {
+        if (!p.count) return;
+        lines.push(csvCell(p.name) + ',' + p.count + ',' + csvCell(p.batches.join('、')));
+      });
+      downloadText('缺交统计_' + (state.classPick) + '.csv', lines.join('\r\n'));
+    });
+    var exb = document.getElementById('btnExportInlineB');
+    if (exb) exb.addEventListener('click', exportMarks);
+    renderScore();
+  }
+
+  /* ============ 平时分计分（只在批量检查后显示） ============ */
+
+  function clampNum(el, def, min, max) {
+    var v = el ? parseFloat(el.value) : def;
+    if (isNaN(v)) v = def;
+    if (v < min) v = min;
+    if (v > max) v = max;
+    return v;
+  }
+
+  function scoreWeight() {
+    return clampNum(document.getElementById('scoreWeight'), 50, 30, 70);
+  }
+
+  function fmt1(n) {
+    if (!isFinite(n)) return '—';
+    var r = Math.round(n * 10) / 10;
+    return (r % 1 === 0) ? String(r) : r.toFixed(1);
+  }
+
+  function renderScore() {
+    var sec = document.getElementById('secScore');
+    var box = document.getElementById('scoreOut');
+    var st = document.getElementById('scoreStatus');
+    var fm = document.getElementById('scoreFormula');
+    var fixBox = document.getElementById('scoreFixBox');
+    if (!sec || !box) return;
+    var b = state.batch;
+    if (state.mode !== 'batch' || !b) {
+      sec.hidden = true;
+      box.innerHTML = '';
+      if (st) st.textContent = '';
+      if (fm) fm.textContent = '';
+      return;
+    }
+    sec.hidden = false;
+
+    var wPct = scoreWeight();
+    var w = wPct / 100;
+    var pass = 60;
+    var modeEl = document.getElementById('scoreMode');
+    var mode = modeEl ? modeEl.value : 'prop';
+    var step = clampNum(document.getElementById('scoreStep'), 10, 0, 100);
+    var grace = clampNum(document.getElementById('scoreGrace'), 0, 0, 99);
+    if (fixBox) fixBox.hidden = (mode !== 'fixed');
+
+    var rows = b.perStudent.map(function (p) {
+      var due = Math.max(0, b.activeCount - p.excused);
+      var got = Math.min(p.present, due);
+      var miss = Math.max(0, due - got);
+      var score;
+      if (mode === 'fixed') {
+        score = Math.max(0, 100 - Math.max(0, miss - grace) * step);
+      } else {
+        score = due > 0 ? 100 * got / due : 100;
+      }
+      return { name: p.name, seq: p.seq, due: due, got: got, miss: miss, score: score };
+    });
+    rows.sort(function (x, y) {
+      if (x.score !== y.score) return x.score - y.score;
+      return x.seq - y.seq;
+    });
+
+    var sum = 0, low = 100;
+    rows.forEach(function (r) { sum += r.score; if (r.score < low) low = r.score; });
+    if (st) {
+      st.textContent = '共 ' + rows.length + ' 人｜平均 ' + fmt1(rows.length ? sum / rows.length : 0) +
+        ' 分｜最低 ' + fmt1(low) + ' 分｜计入 ' + b.activeCount + ' 次作业';
+    }
+    if (fm) {
+      fm.textContent = (mode === 'fixed'
+        ? '平时分 = 100 − （缺交次数 − 宽限 ' + grace + ' 次）× 每次 ' + step + ' 分，最低 0 分。'
+        : '平时分 = 100 × 已交 ÷ 应交。') +
+        '及格所需期末 = (60 − 平时分 × ' + wPct + '%) ÷ (1 − ' + wPct + '%)。';
+    }
+
+    if (!rows.length) { box.innerHTML = '<div class="empty">还没有统计结果。</div>'; return; }
+
+    var final = rows.map(function (r) {
+      var need;
+      if (w >= 1) {
+        need = r.score >= pass ? '已稳过' : '无法及格';
+      } else {
+        var n = (pass - r.score * w) / (1 - w);
+        need = n <= 0 ? '已稳过' : (n > 100 ? '无法及格' : fmt1(n) + ' 分');
+      }
+      return { name: r.name, seq: r.seq, due: r.due, got: r.got, miss: r.miss, score: r.score, need: need };
+    });
+
+    box.innerHTML = '<div class="sec-title">平时分明细' +
+      '<button class="btn sm" id="btnCopyScore">复制成绩</button>' +
+      '<button class="btn sm" id="btnCsvScore">导出 CSV</button></div>' +
+      '<div class="scrollbox"><table class="tb"><thead><tr>' +
+      '<th style="width:48px">序</th><th>姓名</th><th style="width:54px">应交</th>' +
+      '<th style="width:54px">已交</th><th style="width:54px">缺交</th>' +
+      '<th style="width:72px">平时分</th><th style="width:116px">及格所需期末</th></tr></thead><tbody>' +
+      final.map(function (r, i) {
+        var red = r.score < pass;
+        return '<tr><td class="mini">' + (i + 1) + '</td>' +
+          '<td class="bname-cell">' + esc(r.name) + '</td>' +
+          '<td>' + r.due + '</td><td>' + r.got + '</td>' +
+          '<td' + (r.miss ? ' class="num"' : '') + '>' + r.miss + '</td>' +
+          '<td style="font-weight:700' + (red ? ';color:#d93b40' : ';color:#1c9b56') + '">' + fmt1(r.score) + '</td>' +
+          '<td class="mini" style="font-weight:700' + (r.need === '无法及格' ? ';color:#d93b40' : '') + '">' + r.need + '</td></tr>';
+      }).join('') + '</tbody></table></div>';
+
+    function flashScore(msg) {
+      if (!st) return;
+      var keep = st.textContent;
+      st.textContent = msg;
+      setTimeout(function () { if (st.textContent === msg) st.textContent = keep; }, 3000);
+    }
+    var cpS = document.getElementById('btnCopyScore');
+    if (cpS) cpS.addEventListener('click', function () {
+      var lines = final.map(function (r) {
+        return r.name + ' 平时分 ' + fmt1(r.score) + '（应交 ' + r.due + '、已交 ' + r.got + '、缺 ' + r.miss +
+          '，期末需 ' + r.need + '）';
+      });
+      copyText(lines.join('\n'), function (ok) {
+        flashScore(ok ? '平时分已复制（' + final.length + ' 人）' : '复制失败，请手动选中表格');
+      });
+    });
+    var cvS = document.getElementById('btnCsvScore');
+    if (cvS) cvS.addEventListener('click', function () {
+      /* 纯数据表：第一行就是表头，Excel 里可直接框选、排序、筛选、做透视 */
+      var head = ['姓名', '名册序号', '应交', '已交', '缺交', '平时分', '及格所需期末', '计入次数'];
+      var lines = [head.join(',')];
+      final.forEach(function (r) {
+        /* 「20 分」这种带单位的值写进 CSV 时去掉单位，方便在 Excel 里按数值排序 */
+        var needCsv = /分$/.test(r.need) ? r.need.replace(/\s*分$/, '') : r.need;
+        lines.push([csvCell(r.name), r.seq, r.due, r.got, r.miss, fmt1(r.score), csvCell(needCsv), b.activeCount].join(','));
+      });
+      var d = new Date();
+      var stamp = String(d.getFullYear()) + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0');
+      var rule = (mode === 'fixed') ? ('_每次扣' + step + '分_宽限' + grace + '次') : '';
+      downloadText('平时分_' + (state.classPick || '未定班级') + '_' + wPct + 'pct' + rule + '_' + stamp + '.csv',
+        lines.join('\r\n'));
+      flashScore('已导出平时分 CSV（' + final.length + ' 人，占比 ' + wPct + '%）');
+    });
+  }
+
+  function renderMarkCls() {
+    var mc = document.getElementById('markClsName');
+    if (!mc) return;
+    mc.textContent = (state.classPick) || '未确定';
+    mc.style.color = state.classPick ? '#1b5e20' : '#c62828';
+  }
+
+  function renderAll() {
+    renderRoster();
+    fillClassPick();
+    renderMarkCls();
+    renderSingle();
+    renderBatch();
+  }
+
+  /* ============ 导入与事件 ============ */
+
+  function setRosterGate(ready) {
+    document.getElementById('btnSingle').disabled = !ready;
+    document.getElementById('btnBatch').disabled = !ready;
+    if (ready) {
+      document.getElementById('singleStatus').textContent = '可以选了';
+      document.getElementById('batchStatus').textContent = '可以选了';
+    } else {
+      document.getElementById('singleStatus').textContent = '请先导入花名册';
+      document.getElementById('batchStatus').textContent = '请先导入花名册';
+    }
+  }
+
+  async function onRosterPicked(ev) {
+    var files = fileArray(ev.target.files).filter(function (f) { return /\.xlsx$/i.test(f.name); });
+    ev.target.value = '';
+    var st = document.getElementById('rosterStatus');
+    if (!files.length) {
+      st.className = 'status bad';
+      st.textContent = '这个文件夹里没有 .xlsx 文件';
+      return;
+    }
+    st.className = 'status';
+    st.textContent = '正在读取 ' + files.length + ' 份名单…';
+
+    var books = [];
+    for (var i = 0; i < files.length; i++) {
+      var f = files[i];
+      try {
+        var buf = await f.arrayBuffer();
+        var r = parseWorkbookBuffer(buf, f.name);
+        r.ok = r.students.length > 0;
+        r.className = guessClass(f.name, r.title);
+        if (!r.ok) r.err = '没有读到姓名';
+        books.push(r);
+      } catch (e) {
+        books.push({ fileName: f.name, ok: false, err: (e && e.message) ? e.message : '读取失败', students: [] });
+      }
+    }
+    state.books = books;
+    stopLive();
+    state.single = null;
+    state.batch = null;
+    state.singleSrc = null;
+    state.batchSrc = null;
+
+    var okCount = books.filter(function (b) { return b.ok; }).length;
+    var total = books.reduce(function (n, b) { return n + (b.students ? b.students.length : 0); }, 0);
+    st.className = okCount ? 'status ok' : 'status bad';
+    st.textContent = '已读取 ' + okCount + ' 份名单，共 ' + total + ' 人' + (okCount ? '' : '，请检查文件');
+
+    state.classPick = '';
+    renderAll();
+    setRosterGate(okCount > 0);
+  }
+
+  async function onSinglePicked(ev) {
+    var entries = toEntries(ev.target.files);
+    ev.target.value = '';
+    await loadSingle(entries, {});
+  }
+
+  async function loadSingle(entries, opt) {
+    opt = opt || {};
+    var st = document.getElementById('singleStatus');
+    if (!entries.length) {
+      if (opt.live || (live.kind === 'single' && live.handle)) {
+        st.className = 'status';
+        st.textContent = '「' + ((live.handle && live.handle.name) || '所选文件夹') +
+          '」里现在没有文件，实时监控仍在进行，学生一交就会自动出现';
+        state.singleSrc = null;
+        state.single = null;
+        renderSingle();
+        return;
+      }
+      st.className = 'status bad';
+      st.textContent = '这个文件夹里没有文件';
+      return;
+    }
+    var students = studentsOfClass(state.classPick);
+    if (!students.length) {
+      st.className = 'status bad';
+      st.textContent = '当前班级没有名单，请先导入花名册';
+      return;
+    }
+    var root = entries[0].root;
+    var autoNames = opt.live ? '' : await autoLoadFromEntries(entries);
+    var oldCls = state.classPick;
+    var renamed = opt.live ? '' : applyDirName(root);
+    students = studentsOfClass(state.classPick);
+    if (!students.length) {
+      st.className = 'status bad';
+      st.textContent = '当前班级没有名单，请先导入花名册';
+      return;
+    }
+
+    var groups = groupByBatch(entries);
+    if (!groups.length) {
+      st.className = 'status bad';
+      st.textContent = '选到的是某一次作业的文件。请回到上一层，选班级文件夹（如 xx数控高考）';
+      state.singleSrc = null;
+      state.single = null;
+      renderSingle();
+      return;
+    }
+    var curBatch = '';
+    if (opt.keepBatch) {
+      for (var gk = 0; gk < groups.length; gk++) {
+        if (groups[gk].batch === opt.keepBatch) { curBatch = opt.keepBatch; break; }
+      }
+    }
+    if (!curBatch) curBatch = defaultBatchOf(groups);
+    state.singleBatch = curBatch;
+    var curEntries = entries;
+    for (var gi = 0; gi < groups.length; gi++) {
+      if (groups[gi].batch === curBatch) { curEntries = groups[gi].entries; break; }
+    }
+
+    var result = computeSingle(curEntries, students, curBatch);
+
+    var hasDateSub = false;
+    entries.forEach(function (e) {
+      var seg = e.inner.split('/');
+      if (seg.length > 1 && DATE_RE.test(seg[0])) hasDateSub = true;
+    });
+
+    var okFiles = curEntries.filter(function (e) { return EXT_RE.test(e.name); }).length;
+    /* 只在「一个文件名都对不上名单里的人」时才提示自查。
+       原来按「匹配人数 < 名单的 30%」判断，会把「很多人没交」这种正常教学状态误当成选错文件夹——
+       可这个工具本来就是用来查缺交的，交的人少恰恰是它该报告的结果，不是错误。
+       名字能对上就证明名单与文件夹是配对的，剩下多少人不交是教学事实，程序不插手。
+       用 submitted（文件名匹配集合）而不是 present（含补交/排除未交），避免人工标记反过来触发误报。 */
+    var tooFew = result.submitted.size === 0;
+
+    /* 子文件夹全是学生姓名 → 选深了一层；文件夹名和当前比对班级对不上 → 第一项可能选错 */
+    var nameLike = nameLikeCount(groups, students);
+    var deepLevel = nameLike >= 3 && nameLike >= Math.ceil(groups.length * 0.6);
+    var nr = norm(root), nc = norm(state.classPick);
+    var rootMismatch = !renamed && !!nr && !!nc && nr.indexOf(nc) === -1 && nc.indexOf(nr) === -1;
+
+    var clsHint = '', clsErr = false;
+    if (renamed) {
+      clsHint = '班级名已按文件夹名定为「' + renamed + '」（花名册识别为「' + oldCls + '」）。如果这不是本班，请重新选班级文件夹。';
+      /* 班级名被文件夹名覆盖、又一个都对不上 —— 多半是这文件夹属于另一个班，别只留橙色提示 */
+      clsErr = okFiles >= 3 && result.submitted.size === 0;
+    } else if (rootMismatch) {
+      clsErr = true;
+      clsHint = '⚠ 选的文件夹是「' + root + '」，但第一项「当前比对班级」是「' + state.classPick + '」（' +
+        students.length + ' 人），两个名字对不上 —— 这一屏的未交名单不可信。' +
+        '请先在第一项把班级换成「' + root + '」所属的那个班，再重新选一次文件夹。';
+    }
+
+    state.singleSrc = {
+      entries: entries,
+      batchName: root,
+      root: root,
+      groups: groups,
+      looksLikeClass: hasDateSub,
+      tooFew: tooFew,
+      deepLevel: deepLevel,
+      nameLike: nameLike,
+      rootMismatch: rootMismatch,
+      clsHint: clsHint,
+      clsErr: clsErr
+    };
+    result.looksLikeClass = hasDateSub;
+    result.tooFew = tooFew;
+    result.clsHint = clsHint;
+    result.clsErr = clsErr;
+    state.single = result;
+
+    var liveTag = '';
+    if (opt.live) {
+      liveTag = '；● 自动更新 ' + liveStamp() +
+        (opt.delta ? '（文件 ' + (opt.delta > 0 ? '+' : '') + opt.delta + '）' : '');
+    } else if (live.kind === 'single' && live.handle) {
+      liveTag = '；● 实时监控中（3 秒/次）';
+    }
+    st.className = (tooFew || rootMismatch) ? 'status bad' : 'status ok';
+    st.textContent = '已读取「' + root + '」，共 ' + groups.length + ' 次作业，当前查看：' + curBatch +
+      (rootMismatch ? '；⚠ 与当前比对班级「' + state.classPick + '」不符' : '') +
+      (renamed ? '；班级名按文件夹名定为「' + renamed + '」' : '') +
+      (deepLevel ? '；⚠ 这些子文件夹都是学生姓名，可能选深了一层' : '') +
+      (autoNames ? '；已自动读取标记：' + autoNames : '') + liveTag;
+    renderSingle();
+  }
+
+  async function onBatchPicked(ev) {
+    var entries = toEntries(ev.target.files);
+    ev.target.value = '';
+    await loadBatch(entries, {});
+  }
+
+  async function loadBatch(entries, opt) {
+    opt = opt || {};
+    var st = document.getElementById('batchStatus');
+    var root = entries.length ? entries[0].root : '';
+    var autoNames = opt.live ? '' : await autoLoadFromEntries(entries);
+    var oldCls = state.classPick;
+    var renamed = opt.live ? '' : applyDirName(root);
+    var students = studentsOfClass(state.classPick);
+    if (!students.length) {
+      st.className = 'status bad';
+      st.textContent = '当前班级没有名单，请先导入花名册';
+      return;
+    }
+    var seenSub = {}, subCount = 0, looksLikeRoot = false;
+    entries.forEach(function (e) {
+      var seg = e.inner.split('/');
+      if (seg.length < 2) return;
+      var sname = seg[0];
+      if (seenSub[sname]) return;
+      seenSub[sname] = 1;
+      subCount++;
+      if (state.classPick && norm(sname) === norm(state.classPick)) looksLikeRoot = true;
+    });
+    if (!subCount) {
+      if (live.kind === 'batch' && live.handle) {
+        st.className = 'status';
+        st.textContent = '「' + live.handle.name + '」里现在没有子文件夹，实时监控仍在进行';
+        state.batch = null;
+        state.batchSrc = null;
+        renderBatch();
+        return;
+      }
+      st.className = 'status bad';
+      st.textContent = '这个文件夹里没有子文件夹，请选班级文件夹（如 xx数控高考）';
+      state.batch = null;
+      state.batchSrc = null;
+      renderBatch();
+      return;
+    }    if (looksLikeRoot) {
+      st.className = 'status bad';
+      st.textContent = '这看起来是 CADwork 根目录，请进到具体班级文件夹（如 xx数控高考）再选一次';
+      state.batch = null;
+      state.batchSrc = null;
+      renderBatch();
+      return;
+    }
+    var b = computeBatch(entries, students, state.classPick);
+    b.root = root;
+    if (renamed) {
+      b.clsHint = '班级名已按文件夹名定为「' + renamed + '」（花名册识别为「' + oldCls + '」）。如果这不是本班，请重新选班级文件夹。';
+    } else if (root && norm(root) !== norm(state.classPick)) {
+      b.clsErr = true;
+      b.clsHint = '⚠ 选的文件夹是「' + root + '」，但第一项「当前比对班级」是「' + state.classPick + '」（' +
+        students.length + ' 人），两个名字对不上 —— 下面的统计不可信。' +
+        '请先在第一项换成「' + root + '」所属的那个班，再重新选一次文件夹。';
+    }
+    state.batchSrc = { entries: entries, root: root, clsHint: b.clsHint || '', clsErr: !!b.clsErr };
+    state.batch = b;
+    var liveTag = '';
+    if (opt.live) {
+      liveTag = '；● 自动更新 ' + liveStamp() +
+        (opt.delta ? '（文件 ' + (opt.delta > 0 ? '+' : '') + opt.delta + '）' : '');
+    } else if (live.kind === 'batch' && live.handle) {
+      liveTag = '；● 实时监控中（3 秒/次）';
+    }
+    st.className = 'status ok';
+    st.textContent = '已读取「' + root + '」，识别到 ' + b.totalCount + ' 次作业' +
+      (renamed ? '；班级名按文件夹名定为「' + renamed + '」' : '') +
+      (autoNames ? '；已自动读取标记：' + autoNames : '') + liveTag;
+    renderBatch();
+  }
+
+  /* 先试「目录句柄」：拿到句柄就能一直盯，学生中途交了会自动刷新；
+     拿不到（老浏览器 / 用户拒绝）就退回原来的 input 选文件夹（一次性快照，不会自动更新）。 */
+  async function pickDirAndLoad(kind, btn, fileInput, loader) {
+    var label = btn.textContent;
+    if (typeof window.showDirectoryPicker === 'function') {
+      try {
+        btn.disabled = true;
+        var handle = await window.showDirectoryPicker({ mode: 'read' });
+        btn.textContent = '正在读取…';
+        var entries = await entriesFromHandle(handle);
+        startLive(kind, handle, entries);
+        await loader(entries, {});
+        btn.textContent = label;
+        btn.disabled = false;
+        return;
+      } catch (e) {
+        btn.textContent = label;
+        btn.disabled = false;
+        if (e && e.name === 'AbortError') return;
+        var st = document.getElementById(kind === 'single' ? 'singleStatus' : 'batchStatus');
+        if (st) {
+          st.className = 'status';
+          st.textContent = '这个浏览器用不了目录句柄（' + ((e && e.name) || '未知错误') +
+            '），改用普通选择文件夹（这次不会自动刷新）';
+        }
+      }
+    }
+    fileInput.click();
+  }
+
+  function csvCell(v) {
+    var s = String(v == null ? '' : v);
+    if (/[",\r\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+    return s;
+  }
+
+  function downloadText(name, text, mime) {
+    var blob = new Blob(['\ufeff' + text], { type: (mime || 'text/csv') + ';charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 1500);
+  }
+
+  function copyText(text, done) {
+    function fb() {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.top = '-2000px';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+      document.body.removeChild(ta);
+      done(ok);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { done(true); }, fb);
+    } else {
+      fb();
+    }
+  }
+
+  function downloadJson(name, text) {
+    var blob = new Blob([text], { type: 'application/json;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 1500);
+  }
+
+  function marksOfClass(cls) {
+    return state.marks.filter(function (m) { return m['class'] === cls; });
+  }
+  function exsOfClass(cls) {
+    return state.excluded.filter(function (e) { return e['class'] === cls; });
+  }
+
+  function exportMarks() {
+    var cls = state.classPick;
+    var st = document.getElementById('markStatus');
+    if (!cls) {
+      st.className = 'status bad';
+      st.textContent = '请先导入花名册确定班级，再导出标记';
+      return;
+    }
+    var marks = marksOfClass(cls);
+    var exs = exsOfClass(cls);
+    var data = {
+      version: 2,
+      'class': cls,
+      exportedAt: new Date().toISOString(),
+      marks: marks,
+      excluded: exs
+    };
+    downloadJson(markFileOf(cls), JSON.stringify(data, null, 2));
+    state.dirty = false;
+    st.className = 'status ok';
+    st.textContent = '已导出「' + markFileOf(cls) + '」：' + marks.length + ' 条标记、' + exs.length +
+      ' 条不计入。请把它放进 U盘 CADwork\\' + cls + '\\ 里，覆盖旧文件';
+    renderAll();
+  }
+
+  function markKey(m) {
+    return (m['class'] || '') + '\u0001' + (m.name || '') + '\u0001' + (m.batch || '');
+  }
+
+  function mergeLoaded(data) {
+    var addMarks = Array.isArray(data.marks) ? data.marks : [];
+    var addExs = Array.isArray(data.excluded) ? data.excluded : [];
+    var mi = {}, i;
+    for (i = 0; i < state.marks.length; i++) mi[markKey(state.marks[i])] = state.marks[i];
+    for (i = 0; i < addMarks.length; i++) {
+      var m = addMarks[i];
+      if (!m || !m.name || !m.type) continue;
+      mi[markKey(m)] = {
+        'class': m['class'] || '', name: m.name, type: m.type,
+        batch: m.batch || '', note: m.note || '', at: m.at || new Date().toISOString()
+      };
+    }
+    state.marks = Object.keys(mi).map(function (k) { return mi[k]; });
+
+    var ei = {};
+    for (i = 0; i < state.excluded.length; i++) {
+      ei[(state.excluded[i]['class'] || '') + '\u0001' + (state.excluded[i].batch || '')] = state.excluded[i];
+    }
+    for (i = 0; i < addExs.length; i++) {
+      var e = addExs[i];
+      if (!e || !e.batch) continue;
+      ei[(e['class'] || '') + '\u0001' + (e.batch || '')] = {
+        'class': e['class'] || '', batch: e.batch, at: e.at || new Date().toISOString()
+      };
+    }
+    state.excluded = Object.keys(ei).map(function (k) { return ei[k]; });
+    return { marks: addMarks.length, exs: addExs.length };
+  }
+
+  function loadMarksFromText(txt, from) {
+    var st = document.getElementById('markStatus');
+    try {
+      var data = JSON.parse(txt);
+      mergeLoaded(data);
+      if (from) state.marksLoadedFrom = from;
+      state.dirty = false;
+      st.className = 'status ok';
+      st.textContent = '已读取「' + (from || '标记文件') + '」，页面共 ' + state.marks.length + ' 条标记';
+      recomputeSingle();
+      recomputeBatch();
+      renderAll();
+    } catch (e) {
+      st.className = 'status bad';
+      st.textContent = '「' + (from || '文件') + '」读不出来，请确认是导出的那种标记 json';
+    }
+  }
+
+  async function autoLoadFromEntries(entries) {
+    /* 目录句柄方式拿到的 entry 没有 File 对象，要现取（e.handle.getFile） */
+    var found = entries.filter(function (e) { return MARK_EXT_RE.test(e.name) && (e.file || e.handle); });
+    if (!found.length) return '';
+    var names = [];
+    for (var i = 0; i < found.length; i++) {
+      try {
+        var f = found[i].file || await found[i].handle.getFile();
+        var txt = await f.text();
+        mergeLoaded(JSON.parse(txt));
+        names.push(found[i].name);
+      } catch (err) { /* 读不出来就跳过，不打断比对 */ }
+    }
+    if (names.length) state.dirty = false;
+    return names.join('、');
+  }
+
+  function init() {
+    var tip = document.getElementById('browserTip');
+    var supports = 'webkitdirectory' in document.createElement('input');
+    if (!supports) {
+      tip.hidden = false;
+      tip.innerHTML = '当前浏览器不支持选择文件夹，请改用 <b>Edge</b> 或 <b>Chrome</b> 打开（右键文件 → 打开方式）。';
+      document.getElementById('btnRoster').disabled = true;
+      return;
+    }
+
+    var btnRoster = document.getElementById('btnRoster');
+    var fileRoster = document.getElementById('fileRoster');
+    btnRoster.addEventListener('click', function () { fileRoster.click(); });
+    fileRoster.addEventListener('change', onRosterPicked);
+
+    var btnSingle = document.getElementById('btnSingle');
+    var fileSingle = document.getElementById('fileSingle');
+    btnSingle.addEventListener('click', function () {
+      pickDirAndLoad('single', btnSingle, fileSingle, loadSingle);
+    });
+    fileSingle.addEventListener('change', onSinglePicked);
+
+    var btnBatch = document.getElementById('btnBatch');
+    var fileBatch = document.getElementById('fileBatch');
+    btnBatch.addEventListener('click', function () {
+      pickDirAndLoad('batch', btnBatch, fileBatch, loadBatch);
+    });
+    fileBatch.addEventListener('change', onBatchPicked);
+
+    document.getElementById('classPick').addEventListener('change', function (ev) {
+      stopLive();
+      state.classPick = ev.target.value;
+      state.single = null;
+      state.batch = null;
+      state.singleSrc = null;
+      state.batchSrc = null;
+      state.singleBatch = '';
+      fillClassPick();
+      renderMarkCls();
+      renderSingle();
+      renderBatch();
+      setRosterGate(true);
+      document.getElementById('singleStatus').textContent = '可以选了';
+      document.getElementById('batchStatus').textContent = '可以选了';
+    });
+
+    var tabs = document.querySelectorAll('.tab');
+    for (var i = 0; i < tabs.length; i++) {
+      tabs[i].addEventListener('click', function (ev) {
+        var mode = ev.target.getAttribute('data-mode');
+        state.mode = mode;
+        for (var k = 0; k < tabs.length; k++) tabs[k].classList.remove('on');
+        ev.target.classList.add('on');
+        document.getElementById('paneSingle').hidden = mode !== 'single';
+        document.getElementById('paneBatch').hidden = mode !== 'batch';
+        renderScore();
+      });
+    }
+
+    ['scoreWeight', 'scoreStep', 'scoreGrace'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener('input', renderScore);
+      el.addEventListener('change', function () {
+        var lim = id === 'scoreWeight' ? [30, 70] : (id === 'scoreStep' ? [0, 100] : [0, 99]);
+        var v = parseFloat(el.value);
+        if (isNaN(v)) v = lim[0];
+        if (v < lim[0]) v = lim[0];
+        if (v > lim[1]) v = lim[1];
+        el.value = v;
+        renderScore();
+      });
+    });
+    var smEl = document.getElementById('scoreMode');
+    if (smEl) smEl.addEventListener('change', renderScore);
+
+    document.getElementById('btnExportMarks').addEventListener('click', exportMarks);
+
+    var btnPrintAll = document.getElementById('btnPrintAll');
+    if (btnPrintAll) btnPrintAll.addEventListener('click', function () { window.print(); });
+
+    var fileMarks = document.getElementById('fileMarks');
+    document.getElementById('btnImportMarks').addEventListener('click', function () { fileMarks.click(); });
+    fileMarks.addEventListener('change', async function (ev) {
+      var fs = fileArray(ev.target.files);
+      ev.target.value = '';
+      if (!fs.length) return;
+      var st = document.getElementById('markStatus');
+      var okN = 0, bad = [];
+      for (var i = 0; i < fs.length; i++) {
+        try {
+          mergeLoaded(JSON.parse(await fs[i].text()));
+          okN++;
+        } catch (e) {
+          bad.push(fs[i].name);
+        }
+      }
+      if (okN) state.dirty = false;
+      st.className = okN ? 'status ok' : 'status bad';
+      st.textContent = '已读取 ' + okN + ' 个标记文件，页面共 ' + state.marks.length + ' 条标记、' +
+        state.excluded.length + ' 条不计入' + (bad.length ? '；读不出：' + bad.join('、') : '');
+      recomputeSingle();
+      recomputeBatch();
+      renderAll();
+    });
+
+    document.getElementById('btnClearMarks').addEventListener('click', function () {
+      var cls = state.classPick;
+      if (!state.marks.length && !state.excluded.length) {
+        document.getElementById('markStatus').textContent = '现在没有标记';
+        return;
+      }
+      var msg = cls
+        ? '清除「' + (cls) + '」的全部标记与「本次不计入」记录？其他班不受影响。'
+        : '当前还没确定班级，将清除本页所有标记。确定？';
+      if (!window.confirm(msg + '\n清除后请重新导出并覆盖 U盘 里的旧文件，否则下次会重新载入。')) return;
+      if (cls) {
+        state.marks = state.marks.filter(function (m) { return m['class'] !== cls; });
+        state.excluded = state.excluded.filter(function (e) { return e['class'] !== cls; });
+      } else {
+        state.marks = [];
+        state.excluded = [];
+      }
+      state.dirty = true;
+      var st = document.getElementById('markStatus');
+      st.className = 'status';
+      st.textContent = '已清除' + (cls ? '「' + (cls) + '」的标记' : '全部标记') + '，请重新导出并覆盖旧文件';
+      recomputeSingle();
+      recomputeBatch();
+      renderAll();
+    });
+
+    setRosterGate(false);
+  }
+
+  if (typeof document !== 'undefined') {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  }
+})();
+</script>
+</body>
+</html>
