@@ -159,6 +159,26 @@ header .rule::after{right:-14px;background:#ff2e88;box-shadow:0 0 10px #ff2e88}
 .tab{border:1px solid rgba(31,56,88,.13);background:linear-gradient(180deg,#fff,#f4f8fd);border-radius:14px;padding:10px 20px;font-size:15px;font-weight:600;color:#41546b;cursor:pointer;font-family:inherit;box-shadow:0 2px 5px rgba(31,56,88,.10),0 8px 18px rgba(31,56,88,.09);transition:transform .15s cubic-bezier(.2,.8,.2,1),background .15s,box-shadow .15s}
 .tab:hover{background:linear-gradient(180deg,#fff,#eef5ff);border-color:rgba(31,56,88,.2);box-shadow:0 4px 10px rgba(31,56,88,.14),0 12px 26px rgba(31,56,88,.13);transform:translateY(-1px)}
 .tab.on{background:linear-gradient(180deg,#3b82f6,#2563eb);border-color:rgba(37,99,235,.85);color:#fff;box-shadow:0 3px 8px rgba(37,99,235,.32),0 8px 20px rgba(37,99,235,.24)}
+.extbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 9px}
+.extcap{font-size:14px;font-weight:700;color:#41546b;white-space:nowrap}
+.extgroup{display:flex;gap:8px;flex-wrap:wrap}
+.extbtn{display:inline-flex;flex-direction:column;align-items:center;gap:1px;border:1px solid rgba(31,56,88,.13);background:rgba(255,255,255,.78);border-radius:12px;padding:5px 12px;font-family:inherit;cursor:pointer;transition:background .15s,border-color .15s,transform .15s}
+.extbtn:hover{background:#fff;border-color:rgba(31,56,88,.25);transform:translateY(-1px)}
+.extbtn .ex{font-size:13px;font-weight:600;color:#54677d;line-height:1.35}
+.extbtn .eh{font-size:11px;color:#98a4b3;line-height:1.35}
+.extbtn.on{background:linear-gradient(180deg,#eaf2ff,#dae8ff);border-color:rgba(37,99,235,.5)}
+.extbtn.on .ex{color:#1d4ed8}
+.extbtn.on .eh{color:#4173c4}
+.extother{display:inline-flex;align-items:center;gap:6px;border:1px dashed rgba(31,56,88,.2);border-radius:12px;padding:4px 10px;background:rgba(255,255,255,.55)}
+.extother label{font-size:12px;color:#8b98a8;cursor:text}
+.extother input{border:0;background:transparent;font-size:12px;width:92px;font-family:inherit;color:#16233a;outline:none;padding:2px 0}
+.extnow{font-size:12.5px;color:#7c8a9a;margin:0 0 15px;padding-left:2px;line-height:1.7}
+.extnow b{color:#2b6cb0;font-weight:600}
+.extnow .extnote{color:#a9b4c1;margin-left:10px}
+.exttip{margin:0 0 15px;padding:10px 14px;border-radius:12px;background:rgba(255,247,232,.94);border:1px solid rgba(215,150,40,.35);font-size:13px;color:#7a5200;line-height:1.75}
+.exttip b{color:#a86400}
+.exttip .extdo{border:0;background:#eda11a;color:#fff;border-radius:9px;padding:4px 12px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;margin-left:6px;transition:background .15s}
+.exttip .extdo:hover{background:#d98f0c}
 .pane[hidden]{display:none}
 .book{border:1px solid rgba(19,39,65,.07);border-radius:16px;padding:13px 15px;margin-bottom:10px;background:rgba(255,255,255,.6)}
 .book.skip{background:rgba(247,249,252,.7);border-style:dashed}
@@ -258,6 +278,7 @@ footer{text-align:center;font-size:13px;color:#93a2b3;padding:16px 0 0}
 
   /* 打印全页时，屏幕专用的操作提示不出现在纸上 */
   .tip.info,.diagtips,.clshint,.sw,.printbar,.hint{display:none!important}
+  .extbar,.extnow,.exttip{display:none!important}
   #tbFolders th:nth-child(5),#tbFolders td:nth-child(5){display:none!important}
   .pane .row,
   #classPickRow,
@@ -300,6 +321,17 @@ footer{text-align:center;font-size:13px;color:#93a2b3;padding:16px 0 0}
     <button class="tab on" data-mode="single">单次作业检查</button>
     <button class="tab" data-mode="batch">批量检查（人次数）</button>
   </div>
+
+  <div class="extbar">
+    <span class="extcap">认哪些文件：</span>
+    <div class="extgroup" id="extGroup"></div>
+    <span class="extother">
+      <label for="extCustom">其他</label>
+      <input id="extCustom" type="text" placeholder="如 stp,igs" autocomplete="off" spellcheck="false">
+    </span>
+  </div>
+  <div class="extnow">当前认：<b id="extNow">—</b><span class="extnote">改完立刻按新格式重算，不用重选文件夹</span></div>
+  <div id="extTip" class="exttip" hidden></div>
 
   <div id="paneSingle" class="pane">
     <p class="hint">选<b>班级文件夹</b>（如 <code>xx数控高考</code>）。选好之后页面会<b>一直盯着这个文件夹</b>：学生中途把作业交进来，几秒内自动归到已交，不用重新选。同时会自动读取同目录的 <code>班级名作业标记.json</code>，并默认打开<b>最近一次</b>；顶部下拉可切换看哪一次。<b>班级名以文件夹名为准。</b></p>
@@ -374,7 +406,18 @@ footer{text-align:center;font-size:13px;color:#93a2b3;padding:16px 0 0}
 (function () {
   'use strict';
 
-  var EXT_RE = /\.(dwg|jpg|jpeg)$/i;
+  /* ============ 认哪些文件（可勾选，按课切换） ============
+     不同课收不同格式：CAD 交 dwg，数控加工交 SolidWorks 的 sldprt，信息技术交 docx。
+     写死一份白名单迟早出事（曾把整班 sldprt 全判成未交），所以做成可勾选。 */
+  var EXT_GROUPS = [
+    { key: 'cad', label: 'CAD 图纸', hint: 'dwg dxf', exts: ['dwg', 'dxf'] },
+    { key: 'd3', label: '三维模型', hint: 'sldprt ipt prt', exts: ['sldprt', 'sldasm', 'slddrw', 'prt', 'ipt', 'iam', 'idw'] },
+    { key: 'doc', label: '文档表格', hint: 'docx xlsx pptx', exts: ['docx', 'doc', 'xlsx', 'xls', 'pptx', 'ppt', 'pdf'] },
+    { key: 'img', label: '图片', hint: 'jpg png bmp', exts: ['jpg', 'jpeg', 'png', 'bmp', 'gif'] }
+  ];
+  var EXT_PREF_KEY = 'hwchecker.extpref.v1';
+  var EXT_TEMP_RE = /^~\$|^\.~lock|^\._/i;
+
   var DATE_RE = /^\d{8}$/;
   var MARK_SUFFIX = '作业标记.json';
   var MARK_EXT_RE = /作业标记\.json$/i;
@@ -394,8 +437,86 @@ footer{text-align:center;font-size:13px;color:#93a2b3;padding:16px 0 0}
     excluded: [],
     dirty: false,
     mode: 'single',
-    marksLoadedFrom: ''
+    marksLoadedFrom: '',
+    extSel: { cad: true, d3: true, doc: false, img: true },
+    extCustom: [],
+    extList: []
   };
+
+  /* ============ 文件格式白名单（可勾选） ============ */
+
+  function refreshExtList() {
+    var out = [];
+    EXT_GROUPS.forEach(function (g) {
+      if (state.extSel[g.key]) out = out.concat(g.exts);
+    });
+    (state.extCustom || []).forEach(function (x) {
+      x = String(x || '').toLowerCase().replace(/^\./, '').trim();
+      if (x && out.indexOf(x) === -1) out.push(x);
+    });
+    state.extList = out;
+  }
+
+  function extOf(name) {
+    var m = /\.([a-z0-9]+)$/i.exec(String(name || ''));
+    return m ? m[1].toLowerCase() : '';
+  }
+
+  function isTempFile(name) {
+    return EXT_TEMP_RE.test(String(name || ''));
+  }
+
+  function acceptFile(name) {
+    var n = String(name || '');
+    if (!n || isTempFile(n)) return false;
+    var e = extOf(n);
+    return !!e && state.extList.indexOf(e) !== -1;
+  }
+
+  function extLabelStr() { return state.extList.join('/'); }
+
+  function saveExtPref() {
+    try {
+      localStorage.setItem(EXT_PREF_KEY, JSON.stringify({ sel: state.extSel, custom: state.extCustom }));
+    } catch (e) { /* 个别浏览器在 file:// 下禁用 localStorage，忽略即可 */ }
+  }
+
+  function loadExtPref() {
+    try {
+      var raw = localStorage.getItem(EXT_PREF_KEY);
+      if (!raw) return;
+      var o = JSON.parse(raw);
+      if (o && o.sel) {
+        EXT_GROUPS.forEach(function (g) {
+          if (typeof o.sel[g.key] === 'boolean') state.extSel[g.key] = o.sel[g.key];
+        });
+      }
+      if (o && Array.isArray(o.custom)) state.extCustom = o.custom.slice(0, 20);
+    } catch (e) { /* 读不到就用默认值，不影响使用 */ }
+  }
+
+  /* 文件夹里有一批文件因为「格式没勾」被排除 —— 提醒一句，防止出现「全班都没交」的假象 */
+  function extSuggestion(entries) {
+    var skipped = {};
+    (entries || []).forEach(function (e) {
+      var n = e.name;
+      if (!n || isTempFile(n)) return;
+      var x = extOf(n);
+      if (!x) return;
+      if (state.extList.indexOf(x) !== -1) return;
+      skipped[x] = (skipped[x] || 0) + 1;
+    });
+    var best = null;
+    EXT_GROUPS.forEach(function (g) {
+      if (state.extSel[g.key]) return;
+      var cnt = 0, hitExts = [];
+      g.exts.forEach(function (x) {
+        if (skipped[x]) { cnt += skipped[x]; hitExts.push(x); }
+      });
+      if (cnt >= 3 && (!best || cnt > best.n)) best = { key: g.key, label: g.label, n: cnt, exts: hitExts };
+    });
+    return best;
+  }
 
   /* ============ 通用工具 ============ */
 
@@ -960,7 +1081,7 @@ footer{text-align:center;font-size:13px;color:#93a2b3;padding:16px 0 0}
     }
   }
 
-  function submittedSet(entries, students) {    var cand = entries.filter(function (e) { return EXT_RE.test(e.name); })
+  function submittedSet(entries, students) {    var cand = entries.filter(function (e) { return acceptFile(e.name); })
       .map(function (e) { return norm(e.inner); });
     var hit = new Set();
     for (var i = 0; i < students.length; i++) {
@@ -1088,7 +1209,7 @@ footer{text-align:center;font-size:13px;color:#93a2b3;padding:16px 0 0}
       missing: missing,
       makeup: makeup,
       absent: absent,
-      fileCount: entries.filter(function (e) { return EXT_RE.test(e.name); }).length
+      fileCount: entries.filter(function (e) { return acceptFile(e.name); }).length
     };
   }
 
@@ -1097,7 +1218,7 @@ footer{text-align:center;font-size:13px;color:#93a2b3;padding:16px 0 0}
   function computeBatch(entries, students, cls) {
     var map = new Map();
     entries.forEach(function (e) {
-      if (!EXT_RE.test(e.name)) return;
+      if (!acceptFile(e.name)) return;
       var seg = e.inner.split('/');
       if (seg.length < 2) return;
       var b = seg[0] || '';
@@ -1190,7 +1311,7 @@ footer{text-align:center;font-size:13px;color:#93a2b3;padding:16px 0 0}
   function groupByBatch(entries) {
     var map = new Map();
     entries.forEach(function (e) {
-      if (!EXT_RE.test(e.name)) return;
+      if (!acceptFile(e.name)) return;
       var seg = e.inner.split('/');
       if (seg.length < 2) return;
       var b = seg[0] || '';
@@ -1887,6 +2008,7 @@ footer{text-align:center;font-size:13px;color:#93a2b3;padding:16px 0 0}
   async function loadSingle(entries, opt) {
     opt = opt || {};
     var st = document.getElementById('singleStatus');
+    renderExtTip([]);
     if (!entries.length) {
       if (opt.live || (live.kind === 'single' && live.handle)) {
         st.className = 'status';
@@ -1908,9 +2030,10 @@ footer{text-align:center;font-size:13px;color:#93a2b3;padding:16px 0 0}
       return;
     }
     var root = entries[0].root;
-    var autoNames = opt.live ? '' : await autoLoadFromEntries(entries);
+    var soft = opt.live || opt.recount;
+    var autoNames = soft ? '' : await autoLoadFromEntries(entries);
     var oldCls = state.classPick;
-    var renamed = opt.live ? '' : applyDirName(root);
+    var renamed = soft ? '' : applyDirName(root);
     students = studentsOfClass(state.classPick);
     if (!students.length) {
       st.className = 'status bad';
@@ -1920,6 +2043,19 @@ footer{text-align:center;font-size:13px;color:#93a2b3;padding:16px 0 0}
 
     var groups = groupByBatch(entries);
     if (!groups.length) {
+      /* 先排除「格式没勾」这个原因 —— 否则会误报「选深了一层」，把人带偏。
+         这里保留 singleSrc.entries，勾上格式后能直接重算，不用重选文件夹。 */
+      var sgNoBatch = extSuggestion(entries);
+      if (sgNoBatch) {
+        st.className = 'status bad';
+        st.textContent = '这个文件夹里有 ' + sgNoBatch.n + ' 个 .' + sgNoBatch.exts.join('/') +
+          '，但你现在没勾「' + sgNoBatch.label + '」，所以一个都没算进来。按下面的提示勾上即可，不用重选文件夹。';
+        state.singleSrc = { entries: entries, batchName: root, root: root, groups: [], looksLikeClass: false };
+        state.single = null;
+        renderExtTip(entries);
+        renderSingle();
+        return;
+      }
       st.className = 'status bad';
       st.textContent = '选到的是某一次作业的文件。请回到上一层，选班级文件夹（如 xx数控高考）';
       state.singleSrc = null;
@@ -1948,7 +2084,7 @@ footer{text-align:center;font-size:13px;color:#93a2b3;padding:16px 0 0}
       if (seg.length > 1 && DATE_RE.test(seg[0])) hasDateSub = true;
     });
 
-    var okFiles = curEntries.filter(function (e) { return EXT_RE.test(e.name); }).length;
+    var okFiles = curEntries.filter(function (e) { return acceptFile(e.name); }).length;
     /* 只在「一个文件名都对不上名单里的人」时才提示自查。
        原来按「匹配人数 < 名单的 30%」判断，会把「很多人没交」这种正常教学状态误当成选错文件夹——
        可这个工具本来就是用来查缺交的，交的人少恰恰是它该报告的结果，不是错误。
@@ -1993,12 +2129,14 @@ footer{text-align:center;font-size:13px;color:#93a2b3;padding:16px 0 0}
     result.clsErr = clsErr;
     state.single = result;
 
-    var liveTag = '';
+    var liveTag = '；认 ' + extLabelStr();
     if (opt.live) {
-      liveTag = '；● 自动更新 ' + liveStamp() +
+      liveTag += '；● 自动更新 ' + liveStamp() +
         (opt.delta ? '（文件 ' + (opt.delta > 0 ? '+' : '') + opt.delta + '）' : '');
+    } else if (opt.recount) {
+      liveTag += '；已按新格式重算';
     } else if (live.kind === 'single' && live.handle) {
-      liveTag = '；● 实时监控中（3 秒/次）';
+      liveTag += '；● 实时监控中（3 秒/次）';
     }
     st.className = (tooFew || rootMismatch) ? 'status bad' : 'status ok';
     st.textContent = '已读取「' + root + '」，共 ' + groups.length + ' 次作业，当前查看：' + curBatch +
@@ -2006,6 +2144,7 @@ footer{text-align:center;font-size:13px;color:#93a2b3;padding:16px 0 0}
       (renamed ? '；班级名按文件夹名定为「' + renamed + '」' : '') +
       (deepLevel ? '；⚠ 这些子文件夹都是学生姓名，可能选深了一层' : '') +
       (autoNames ? '；已自动读取标记：' + autoNames : '') + liveTag;
+    renderExtTip(entries);
     renderSingle();
   }
 
@@ -2018,10 +2157,12 @@ footer{text-align:center;font-size:13px;color:#93a2b3;padding:16px 0 0}
   async function loadBatch(entries, opt) {
     opt = opt || {};
     var st = document.getElementById('batchStatus');
+    renderExtTip([]);
     var root = entries.length ? entries[0].root : '';
-    var autoNames = opt.live ? '' : await autoLoadFromEntries(entries);
+    var soft = opt.live || opt.recount;
+    var autoNames = soft ? '' : await autoLoadFromEntries(entries);
     var oldCls = state.classPick;
-    var renamed = opt.live ? '' : applyDirName(root);
+    var renamed = soft ? '' : applyDirName(root);
     var students = studentsOfClass(state.classPick);
     if (!students.length) {
       st.className = 'status bad';
@@ -2073,17 +2214,20 @@ footer{text-align:center;font-size:13px;color:#93a2b3;padding:16px 0 0}
     }
     state.batchSrc = { entries: entries, root: root, clsHint: b.clsHint || '', clsErr: !!b.clsErr };
     state.batch = b;
-    var liveTag = '';
+    var liveTag = '；认 ' + extLabelStr();
     if (opt.live) {
-      liveTag = '；● 自动更新 ' + liveStamp() +
+      liveTag += '；● 自动更新 ' + liveStamp() +
         (opt.delta ? '（文件 ' + (opt.delta > 0 ? '+' : '') + opt.delta + '）' : '');
+    } else if (opt.recount) {
+      liveTag += '；已按新格式重算';
     } else if (live.kind === 'batch' && live.handle) {
-      liveTag = '；● 实时监控中（3 秒/次）';
+      liveTag += '；● 实时监控中（3 秒/次）';
     }
     st.className = 'status ok';
     st.textContent = '已读取「' + root + '」，识别到 ' + b.totalCount + ' 次作业' +
       (renamed ? '；班级名按文件夹名定为「' + renamed + '」' : '') +
       (autoNames ? '；已自动读取标记：' + autoNames : '') + liveTag;
+    renderExtTip(entries);
     renderBatch();
   }
 
@@ -2266,6 +2410,114 @@ footer{text-align:center;font-size:13px;color:#93a2b3;padding:16px 0 0}
     return names.join('、');
   }
 
+  /* ============ 格式选择界面 ============ */
+
+  function renderExtUI() {
+    var box = document.getElementById('extGroup');
+    if (!box) return;
+    box.innerHTML = EXT_GROUPS.map(function (g) {
+      return '<button type="button" class="extbtn' + (state.extSel[g.key] ? ' on' : '') + '" data-ext="' + g.key + '">' +
+        '<span class="ex">' + esc(g.label) + '</span><span class="eh">' + esc(g.hint) + '</span></button>';
+    }).join('');
+    var cst = document.getElementById('extCustom');
+    if (cst) cst.value = (state.extCustom || []).join(',');
+    renderExtNow();
+  }
+
+  function renderExtNow() {
+    var el = document.getElementById('extNow');
+    if (!el) return;
+    el.textContent = extLabelStr() || '（一个都没勾）';
+  }
+
+  function syncExtBtns() {
+    var box = document.getElementById('extGroup');
+    if (!box) return;
+    var btns = box.querySelectorAll('.extbtn');
+    for (var i = 0; i < btns.length; i++) {
+      var k = btns[i].getAttribute('data-ext');
+      if (state.extSel[k]) btns[i].classList.add('on');
+      else btns[i].classList.remove('on');
+    }
+    renderExtNow();
+  }
+
+  /* 文件夹里有大量被格式挡掉的文件 —— 提示一句并给一键勾上 */
+  function renderExtTip(entries) {
+    var box = document.getElementById('extTip');
+    if (!box) return;
+    var sg = extSuggestion(entries || []);
+    if (!sg) { box.hidden = true; box.innerHTML = ''; return; }
+    box.hidden = false;
+    box.innerHTML = '这个文件夹里有 <b>' + sg.n + ' 个 .' + esc(sg.exts.join(' / .')) + '</b>，' +
+      '但你现在没勾「' + esc(sg.label) + '」，它们全被算成「没交」了。' +
+      '<button type="button" class="extdo" data-ext="' + sg.key + '">勾上「' + esc(sg.label) + '」重算</button>';
+  }
+
+  function applyExtChange() {
+    refreshExtList();
+    saveExtPref();
+    syncExtBtns();
+    recomputeLoaded();
+  }
+
+  /* 改了格式后，用已经读进来的文件重新算一遍，不用重选文件夹 */
+  function recomputeLoaded() {
+    var done = false;
+    if (state.singleSrc && state.singleSrc.entries && state.singleSrc.entries.length) {
+      loadSingle(state.singleSrc.entries, { recount: true, keepBatch: state.singleBatch });
+      done = true;
+    }
+    if (state.batchSrc && state.batchSrc.entries && state.batchSrc.entries.length) {
+      loadBatch(state.batchSrc.entries, { recount: true });
+      done = true;
+    }
+    if (!done) renderExtTip([]);
+  }
+
+  function bindExtUI() {
+    var box = document.getElementById('extGroup');
+    if (box) {
+      box.addEventListener('click', function (ev) {
+        var b = ev.target;
+        while (b && b !== box && !(b.className && String(b.className).indexOf('extbtn') !== -1)) b = b.parentNode;
+        if (!b || b === box) return;
+        var key = b.getAttribute('data-ext');
+        if (!key) return;
+        var onCount = EXT_GROUPS.filter(function (g) { return state.extSel[g.key]; }).length;
+        if (state.extSel[key] && onCount <= 1) return;   /* 至少留一组，全不选等于什么都认不到 */
+        state.extSel[key] = !state.extSel[key];
+        applyExtChange();
+      });
+    }
+
+    var tipbox = document.getElementById('extTip');
+    if (tipbox) {
+      tipbox.addEventListener('click', function (ev) {
+        var b = ev.target;
+        while (b && b !== tipbox && !(b.className && String(b.className).indexOf('extdo') !== -1)) b = b.parentNode;
+        if (!b || b === tipbox) return;
+        var key = b.getAttribute('data-ext');
+        if (!key) return;
+        state.extSel[key] = true;
+        applyExtChange();
+      });
+    }
+
+    var cst = document.getElementById('extCustom');
+    if (cst) {
+      cst.addEventListener('input', function () {
+        state.extCustom = cst.value.split(/[,，\s]+/).map(function (x) {
+          return String(x).toLowerCase().replace(/^\./, '').trim();
+        }).filter(Boolean).slice(0, 20);
+        refreshExtList();
+        saveExtPref();
+        renderExtNow();
+        recomputeLoaded();
+      });
+    }
+  }
+
   function init() {
     var tip = document.getElementById('browserTip');
     var supports = 'webkitdirectory' in document.createElement('input');
@@ -2275,6 +2527,12 @@ footer{text-align:center;font-size:13px;color:#93a2b3;padding:16px 0 0}
       document.getElementById('btnRoster').disabled = true;
       return;
     }
+
+    /* 认哪些文件：先读上次的选择，再画界面 */
+    loadExtPref();
+    refreshExtList();
+    renderExtUI();
+    bindExtUI();
 
     var btnRoster = document.getElementById('btnRoster');
     var fileRoster = document.getElementById('fileRoster');
